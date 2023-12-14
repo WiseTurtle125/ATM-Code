@@ -1,3 +1,7 @@
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
 public class Main {
     final String DB = "db.csv";  // Path to database file
     final int FIRST = 0;  // Index of first name in database
@@ -15,5 +19,13 @@ public class Main {
         // If invalid send to Sign Up
         // If user chooses to log out, send back to Log in screen to loop infinitely
 
+        boolean loop = true;
+
+        while (loop) {
+            logIn();
+            signUp();
+            options();
+
+        }
     }
 }

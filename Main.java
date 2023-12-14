@@ -51,4 +51,12 @@ public class Main {
             System.out.println("Invalid account number.");
         }
     }
+
+    public static void singUp() {
+        // Prompt for first and last name
+        // Prompt for a new acc_num
+        // Prompt for a pin
+        // Send back to logIn
+    }
+
 }

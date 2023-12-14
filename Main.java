@@ -3,6 +3,7 @@ import java.lang.*;
 import java.io.*;
 
 public class Main {
+    // Constants //
     final String DB = "db.csv";  // Path to database file
     final int FIRST = 0;  // Index of first name in database
     final int LAST = 1;  // Index of last name in database
@@ -26,6 +27,23 @@ public class Main {
             signUp();
             options();
 
+        }
+    }
+
+    public static void logIn() {
+        // Prompt for acc and pin
+        // Check if valid
+        // If valid and matching send to Option Select
+        // If invalid ask to try again or sign up
+
+        Scanner sc = new Scanner(System.in);
+        int acc_num;
+
+        System.out.println("Enter your account number (XXXXXX): ");
+        try {
+            acc_num = sc.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid account number.");
         }
     }
 }

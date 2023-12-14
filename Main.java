@@ -1,12 +1,11 @@
 public class Main {
-    enum db {  // Used for indexing each line of the database
-        FIRST = 0,
-        LAST = 1,
-        NUM = 2,
-        PIN = 3,
-        SAVINGS = 4,
-        CHECKING = 5
-    }
+    final String DB = "db.csv";  // Path to database file
+    final int FIRST = 0;  // Index of first name in database
+    final int LAST = 1;  // Index of last name in database
+    final int NUM = 2;  // Index of customer number in database
+    final int PIN = 3;  // Index of PIN in database
+    final int SAVINGS = 4;  // Index of savings balance in database
+    final int CHEQUING = 5;  // Index of chequing balance in database
 
     final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
 

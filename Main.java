@@ -5,12 +5,15 @@ import java.io.*;
 public class Main {
     // Constants //
     final String DB = "db.csv";  // Path to database file
-    final int FIRST = 0;  // Index of first name in database
-    final int LAST = 1;  // Index of last name in database
-    final int NUM = 2;  // Index of customer number in database
-    final int PIN = 3;  // Index of PIN in database
-    final int SAVINGS = 4;  // Index of savings balance in database
-    final int CHEQUING = 5;  // Index of chequing balance in database
+
+    private class data {
+        final int FIRST = 0;  // Index of first name in database
+        final int LAST = 1;  // Index of last name in database
+        final int NUM = 2;  // Index of customer number in database
+        final int PIN = 3;  // Index of PIN in database
+        final int SAVINGS = 4;  // Index of savings balance in database
+        final int CHEQUING = 5;  // Index of chequing balance in database
+    }
 
     final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
 
@@ -37,11 +40,13 @@ public class Main {
         // If invalid ask to try again or sign up
 
         Scanner sc = new Scanner(System.in);
-        int acc_num;
+        int acc, pin;
 
-        System.out.println("Enter your account number (XXXXXX): ");
+        System.out.print("Enter your account number (XXXXXX): ");
+
+        // Validate format of acc_num
         try {
-            acc_num = sc.nextInt();
+            acc = sc.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("Invalid account number.");
         }

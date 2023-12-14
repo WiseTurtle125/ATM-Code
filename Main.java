@@ -6,7 +6,8 @@ public class Main {
     // Constants //
     final String DB = "db.csv";  // Path to database file
 
-    private class data {
+    // Database indices
+    private class Data {
         final int FIRST = 0;  // Index of first name in database
         final int LAST = 1;  // Index of last name in database
         final int NUM = 2;  // Index of customer number in database

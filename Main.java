@@ -10,6 +10,10 @@ public class Main {
     final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
 
     public static void main(String[] args) {
-        // Log in
+        // Log in and prompt for acc_num and pin
+        // If valid send to Option Select
+        // If invalid send to Sign Up
+        // If user chooses to log out, send back to Log in screen to loop infinitely
+
     }
 }

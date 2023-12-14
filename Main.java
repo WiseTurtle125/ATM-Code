@@ -5,9 +5,9 @@ import java.io.*;
 public class Main {
     // Constants //
     final String DB = "db.csv";  // Path to database file
-
-    // Database indices
-    private class Data {
+    final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
+    
+    private class Data {  // Database indices
         final int FIRST = 0;  // Index of first name in database
         final int LAST = 1;  // Index of last name in database
         final int NUM = 2;  // Index of customer number in database
@@ -15,8 +15,6 @@ public class Main {
         final int SAVINGS = 4;  // Index of savings balance in database
         final int CHEQUING = 5;  // Index of chequing balance in database
     }
-
-    final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
 
     public static void main(String[] args) {
         // Log in and prompt for acc_num and pin
@@ -26,7 +24,7 @@ public class Main {
 
         boolean loop = true;
 
-        while (loop) {
+        while (loop) {  // Main loop; only exits when logout() is called
             logIn();
             signUp();
             options();

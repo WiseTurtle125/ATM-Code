@@ -67,11 +67,52 @@ public class Main {
         }
     }
 
-    public static void singUp() {
+    public static void signUp() {
         // Prompt for first and last name
         // Prompt for a new acc_num
         // Prompt for a pin
         // Send back to logIn
+
+        Scanner sc = new Scanner(System.in);
+        String firstName;
+        String lastName;
+        int acc;
+        int pin;
+
+        System.out.print("Enter your first name:");
+        firstName = sc.nextLine();
+        System.out.print("Enter your last name:");
+        lastName = sc.nextLine();
+
+        if (firstName.isEmpty() || lastName.isEmpty()) {
+            throw new InputMismatchException("Name cannot be left blank.");
+        }
+
+        System.out.print("Enter your new six-digit account number:");
+        try {
+            acc = sc.nextInt();
+        }
+        catch (InputMismatchException e) {
+            //Wait for Comrade James to find out how to loop asking
+            System.out.println("Account number must contain only integers.");
+        }
+        //Wait for Comrade James to Complete Code
+        if () {
+            throw new InputMismatchException("The account number must be six-digits.");
+        }
+
+        System.out.print("Enter a pin for your new account:");
+        try {
+            pin = sc.nextInt();
+        }
+        catch (InputMismatchException e) {
+            //Wait for Comrade James to find out how to loop asking
+            System.out.println("Pin must contain only integers.");
+        }
+        //Wait for Comrade James to Complete Code
+        if () {
+            throw new InputMismatchException("The Pin number must be four-digits.");
+        }
     }
 
 }

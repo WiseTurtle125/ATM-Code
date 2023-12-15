@@ -25,16 +25,18 @@ public class Main {
         // If user chooses to log out, send back to Log in screen to loop infinitely
 
         boolean loop = true;
+        boolean repeat = true;
 
         while (loop) {
-            logIn();
+            while (repeat) {
+                repeat = logIn();
+            }
             signUp();
-            options();
-
+            loop = options();  // If user chooses to log out, return false
         }
     }
 
-    public static void logIn() {
+    public static boolean logIn() {
         // Prompt for acc and pin
         // Check if valid
         // If valid and matching send to Option Select
@@ -42,29 +44,54 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         int acc, pin;
+        boolean proceed = false;
 
-        // Ask for acc
-        System.out.print("Enter your account number (XXXXXX): ");
-
-        // Validate format of acc_num
-        try {
-            acc = sc.nextInt();
-            if (acc != 6) {
-                throw new InputMismatchException();
+        while (!proceed) {
+            System.out.print("Enter your six-digit account number:");
+            try {
+                acc = sc.nextInt();
+                if (acc < 100000 || acc > 999999) {
+                    System.out.println("Account number must a positive six-digit number.");
+                } else {
+                    proceed = true;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Account number must contain only integers.");
             }
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid account number.");
+
+            if (!proceed) {
+                System.out.println("Would you like to try again? (y/n)");
+                if (sc.nextLine().equals("y")) {
+                    return false;
+                }
+            }
         }
 
-        // Ask for pin
-        System.out.print("Enter your PIN (XXXX): ");
+        proceed = false;
+        while (!proceed) {
+            System.out.print("Enter your four-digit PIN:");
+            try {
+                pin = sc.nextInt();
+                if (pin < 1000 || pin > 9999) {
+                    System.out.println("Account number must be a positive four-digit number.");
+                } else {
+                    proceed = true;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("PIN must contain only integers.");
+            }
 
-        // Validate format of pin
-        try {
-            pin = sc.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid PIN.");
+            if (!proceed) {
+                System.out.println("Would you like to try again? (y/n)");
+                if (sc.nextLine().equals("y")) {
+                    return false;
+                }
+            }
         }
+
+
+
+        return true;
     }
 
     public static void signUp() {
@@ -133,4 +160,11 @@ public class Main {
         System.out.println("Type 6 to logout:");
     }
 
+    public static void read() {
+        // Read from database
+    }
+
+    public static void write() {
+        // Write to database
+    }
 }

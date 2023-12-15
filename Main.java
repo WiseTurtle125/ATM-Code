@@ -79,16 +79,20 @@ public class Main {
         int acc;
         int pin;
 
+        //Ask for first and last name
         System.out.print("Enter your first name:");
         firstName = sc.nextLine();
         System.out.print("Enter your last name:");
         lastName = sc.nextLine();
 
+        //Check if names are valid (is not empty)
         if (firstName.isEmpty() || lastName.isEmpty()) {
             throw new InputMismatchException("Name cannot be left blank.");
         }
 
+        //Asking for new account number
         System.out.print("Enter your new six-digit account number:");
+        //Validating account number format
         try {
             acc = sc.nextInt();
         }
@@ -101,7 +105,9 @@ public class Main {
             throw new InputMismatchException("The account number must be six-digits.");
         }
 
+        //Asking for new pin
         System.out.print("Enter a pin for your new account:");
+        //Validating pin format
         try {
             pin = sc.nextInt();
         }
@@ -113,6 +119,18 @@ public class Main {
         if () {
             throw new InputMismatchException("The Pin number must be four-digits.");
         }
+    }
+
+    public static void options() {
+        // Prompt for what the user wants to do
+        // Withdraw, Deposit, Open or Close Accounts, View Balance, Change Pin, and Log-out
+
+        System.out.println("Type 1 to withdraw:");
+        System.out.println("Type 2 to deposit:");
+        System.out.println("Type 3 to open an account:");
+        System.out.println("Type 4 to close an account:");
+        System.out.println("Type 5 to change your pin:");
+        System.out.println("Type 6 to logout:");
     }
 
 }

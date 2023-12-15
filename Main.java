@@ -43,13 +43,27 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         int acc, pin;
 
+        // Ask for acc
         System.out.print("Enter your account number (XXXXXX): ");
 
         // Validate format of acc_num
         try {
             acc = sc.nextInt();
+            if (acc != 6) {
+                throw new InputMismatchException();
+            }
         } catch (InputMismatchException e) {
             System.out.println("Invalid account number.");
+        }
+
+        // Ask for pin
+        System.out.print("Enter your PIN (XXXX): ");
+
+        // Validate format of pin
+        try {
+            pin = sc.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid PIN.");
         }
     }
 }

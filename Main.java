@@ -7,7 +7,7 @@ public class Main {
     final String DB = "db.csv";  // Path to database file
 
     // Database indices
-    private class Data {
+    private static class Data {
         final int FIRST = 0;  // Index of first name in database
         final int LAST = 1;  // Index of last name in database
         final int NUM = 2;  // Index of customer number in database
@@ -46,6 +46,7 @@ public class Main {
         int acc, pin;
         boolean proceed = false;
 
+        // Prompt for account number and validate
         while (!proceed) {
             System.out.print("Enter your six-digit account number:");
             try {
@@ -67,7 +68,9 @@ public class Main {
             }
         }
 
-        proceed = false;
+        proceed = false;  // Reset for PIN validation
+
+        // Prompt for PIN and validate
         while (!proceed) {
             System.out.print("Enter your four-digit PIN:");
             try {
@@ -82,7 +85,7 @@ public class Main {
             }
 
             if (!proceed) {
-                System.out.println("Would you like to try again? (y/n)");
+                System.out.println("Would you like to try again? (Y/N)");
                 if (sc.nextLine().equals("y")) {
                     return false;
                 }

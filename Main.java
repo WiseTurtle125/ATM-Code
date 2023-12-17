@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Main {
     // Constants //
-    final String DB = "db.csv";  // Path to database file
+    static final String DB = "db.csv";  // Path to database file
 
     // Database indices
     private static class Data {
@@ -31,7 +31,6 @@ public class Main {
             while (repeat) {
                 repeat = logIn();
             }
-            signUp();
             loop = options();  // If user chooses to log out, return false
         }
     }
@@ -43,7 +42,8 @@ public class Main {
         // If invalid ask to try again or sign up
 
         Scanner sc = new Scanner(System.in);
-        int acc, pin;
+        int acc = -1;
+        int pin = -1;
         boolean proceed = false;
 
         // Prompt for account number and validate
@@ -51,7 +51,7 @@ public class Main {
             System.out.print("Enter your six-digit account number:");
             try {
                 acc = sc.nextInt();
-                if (acc < 100000 || acc > 999999) {
+                if (acc < 100000 || acc > 999999) {  // Account number must be six digits
                     System.out.println("Account number must a positive six-digit number.");
                 } else {
                     proceed = true;
@@ -63,7 +63,8 @@ public class Main {
             if (!proceed) {
                 System.out.println("Would you like to try again? (y/n)");
                 if (sc.nextLine().equals("y")) {
-                    return false;
+                    // Repeat log in
+                    return true;
                 }
             }
         }
@@ -75,7 +76,7 @@ public class Main {
             System.out.print("Enter your four-digit PIN:");
             try {
                 pin = sc.nextInt();
-                if (pin < 1000 || pin > 9999) {
+                if (pin < 1000 || pin > 9999) {  // PIN must be four digits
                     System.out.println("Account number must be a positive four-digit number.");
                 } else {
                     proceed = true;
@@ -87,14 +88,40 @@ public class Main {
             if (!proceed) {
                 System.out.println("Would you like to try again? (Y/N)");
                 if (sc.nextLine().equals("y")) {
-                    return false;
+                    return true;
                 }
             }
         }
 
+        // Check if account number and PIN match
+        CSV db = new CSV(DB);  // Open database
+        CSV.Items item = db.readLine();  // Read first line
+        boolean found = false;
 
+        while (item != null) {
+            if (item.getNum() == acc && item.getPin() == pin) {
+                // Send to options
+                found = true;
+            }
+            item = db.readLine();
+        }
 
-        return true;
+        if (!found) {
+            System.out.println("Account number and PIN do not match.");
+            System.out.println("Would you like to:\n1. Try again\n2. Sign up\n> ");
+            switch (sc.next()) {
+                case "1":
+                    return true;
+                case "2":
+                    signUp();
+                    return false;
+                default:
+                    System.out.println("Invalid input.");
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     public static void signUp() {
@@ -169,5 +196,17 @@ public class Main {
 
     public static void write() {
         // Write to database
+    }
+
+    public static boolean validate(int num, boolean acc) {
+        if (acc) {  // Account number
+            return num >= 100000 && num <= 999999;
+        } else {  // PIN
+            return num >= 1000 && num <= 9999;
+        }
+    }
+
+    public static boolean validate(int pin) {
+        return pin >= 1000 && pin <= 9999;
     }
 }

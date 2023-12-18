@@ -163,6 +163,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         String firstName;
         String lastName;
+        String input;
         int acc;
         int pin;
 
@@ -181,7 +182,13 @@ public class Main {
         System.out.print("Enter your new six-digit account number:");
         //Validating account number format
         try {
-            acc = sc.nextInt();
+            input = sc.nextLine();
+            acc = Integer.parseInt(input);
+            if (input.length() != 6 || acc < 0) {  // Account number must be six digits
+                System.out.println("Account number must a positive six-digit number.");
+            } else {
+                proceed = true;
+            }
         }
         catch (InputMismatchException e) {
             //Wait for Comrade James to find out how to loop asking

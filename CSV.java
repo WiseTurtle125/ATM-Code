@@ -12,7 +12,7 @@ public class CSV {
     private final File file;
     private int line = 0;
 
-    public class Items {
+    public static class Items {
         String first;
         String last;
         int num;

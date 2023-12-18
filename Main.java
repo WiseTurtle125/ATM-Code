@@ -47,12 +47,14 @@ public class Main {
 
         System.out.println(Format.BOLD + Format.WHITE + "Welcome to _______ Bank!" + Format.RESET);
 
-        while (loop) {
-            while (repeat) {  // Repeat log in if user chooses to try again
-                entry = -1;  // Reset entry index
-                repeat = logIn();
+        while (true) {
+            while (loop) {
+                while (repeat) {  // Repeat log in if user chooses to try again
+                    entry = -1;  // Reset entry index
+                    repeat = logIn();
+                }
+                loop = options();  // If user chooses to log out, return false
             }
-            loop = options();  // If user chooses to log out, return false
         }
     }
 
@@ -208,7 +210,7 @@ public class Main {
         }
     }
 
-    public static void options() {
+    public static boolean options() {
         // Prompt for what the user wants to do
         // Withdraw, Deposit, Open or Close Accounts, View Balance, Change Pin, and Log-out
 
@@ -218,6 +220,19 @@ public class Main {
         System.out.println("Type 4 to close an account:");
         System.out.println("Type 5 to change your pin:");
         System.out.println("Type 6 to logout:");
+
+        return true;
+    }
+
+    public static void withdraw() {
+        //Prompts the user which account they want to withdraw money from
+        //If there is one account is automatically chooses
+        //If there is no account is sends an error
+
+        CSV.Items item = db.readLine(entry);
+        if (item.getSavings != null) {
+
+        }
     }
 
     public static void read() {

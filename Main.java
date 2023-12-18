@@ -6,6 +6,7 @@ import java.io.*;
 public class Main {
     // Constants //
     static final String DB = "db.csv";  // Path to database file
+    static CSV db = new CSV(DB);  // Open database
 
     // Database indices
     private static class Data {
@@ -59,7 +60,6 @@ public class Main {
     }
 
     private static boolean findEntry(int acc, int pin) {
-        CSV db = new CSV(DB);  // Open database
         CSV.Items item = db.readLine();  // Read first line
         boolean found = false;
 
@@ -67,7 +67,8 @@ public class Main {
             if (item.getNum() == acc && item.getPin() == pin) {  // Check if account number and PIN match
                 // Allow advancing
                 found = true;
-                entry = db.getLine();
+                entry = db.getLine() - 1;
+                break;
             }
             item = db.readLine();
         }
@@ -98,10 +99,9 @@ public class Main {
             }
 
             if (!proceed) {
-                System.out.println("Would you like to try again? (y/n)");
+                System.out.println("Would you like to sign up instead? (Y/N)");
                 if (sc.nextLine().equals("y")) {
-                    // Repeat log in
-                    return true;
+                    signUp();
                 }
             }
         }
@@ -111,20 +111,16 @@ public class Main {
         // Prompt for PIN and validate
         while (!proceed) {
             System.out.print("Enter your four-digit PIN:");
-            try {
-                input = sc.nextLine();
+            input = sc.nextLine();
+            if (Validate.validatePin(input)) {
                 pin = Integer.parseInt(input);
-                if (input.length() != 4 || pin < 0) {  // PIN must be four digits
-                    System.out.println("Account number must be a positive four-digit number.");
-                } else {
-                    proceed = true;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("PIN must contain only integers.");
+                proceed = true;
+            } else {
+                System.out.println("PIN must be a positive four-digit number.");
             }
 
             if (!proceed) {
-                System.out.println("Would you like to try again? (Y/N)");
+                System.out.println("Would you like to try again with a different account number? (Y/N)");
                 if (sc.nextLine().equals("y")) {
                     return true;
                 }
@@ -165,10 +161,11 @@ public class Main {
 
         // Ask for first and last name
         // Force non-empty input
-        System.out.print("Enter your first name:");
         do {
+            System.out.print("Enter your first name:");
             firstName = sc.nextLine();
         } while (firstName.isEmpty());
+
         System.out.print("Enter your last name:");
         do {
             lastName = sc.nextLine();
@@ -176,18 +173,11 @@ public class Main {
 
         // Asking for new account number
         System.out.print("Enter your new six-digit account number:");
-        try {
-            input = sc.nextLine();
+        input = sc.nextLine();
+        if (Validate.validateAccountNumber(input)) {
             acc = Integer.parseInt(input);
-            if (input.length() != 6 || acc < 0) {  // Account number must be six digits
-                System.out.println("Account number must a positive six-digit number.");
-            } else {
-                proceed = true;
-            }
-        }
-        catch (InputMismatchException e) {
-            //Wait for Comrade James to find out how to loop asking
-            System.out.println("Account number must contain only integers.");
+        } else {
+            System.out.println("Account number must be a positive six-digit number.");
         }
         //Wait for Comrade James to Complete Code
         if () {

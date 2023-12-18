@@ -72,6 +72,9 @@ public class CSV {
         return path;
     }
 
+    // Get line number
+    public int getLine() { return line - 1; }
+
 
     // Read a specific line from the file
     public Items readLine(int line) {

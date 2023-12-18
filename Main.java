@@ -1,3 +1,4 @@
+import java.text.Normalizer;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
@@ -8,15 +9,31 @@ public class Main {
 
     // Database indices
     private static class Data {
-        final int FIRST = 0;  // Index of first name in database
-        final int LAST = 1;  // Index of last name in database
-        final int NUM = 2;  // Index of customer number in database
-        final int PIN = 3;  // Index of PIN in database
-        final int SAVINGS = 4;  // Index of savings balance in database
-        final int CHEQUING = 5;  // Index of chequing balance in database
+        static final int FIRST = 0;  // Index of first name in database
+        static final int LAST = 1;  // Index of last name in database
+        static final int NUM = 2;  // Index of customer number in database
+        static final int PIN = 3;  // Index of PIN in database
+        static final int SAVINGS = 4;  // Index of savings balance in database
+        static final int CHEQUING = 5;  // Index of chequing balance in database
     }
 
     final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
+
+    // Print formatting
+    private static class Format {
+        static final String RESET = "\033[0m";  // Reset text formatting
+        static final String BOLD = "\033[1m";  // Bold text
+        static final String ITALIC = "\033[3m";  // Italic text
+        static final String UNDERLINE = "\033[4m";  // Underline text\
+        static final String BLACK = "\033[30m";  // Black text
+        static final String RED = "\033[31m";  // Red text
+        static final String GREEN = "\033[32m";  // Green text
+        static final String YELLOW = "\033[33m";  // Yellow text
+        static final String CYAN = "\033[36m";  // Cyan text
+        static final String WHITE = "\033[37m";  // White text
+    }
+
+    static int entry;  // Index of current entry in database
 
     public static void main(String[] args) {
         // Log in and prompt for acc_num and pin
@@ -24,15 +41,35 @@ public class Main {
         // If invalid send to Sign Up
         // If user chooses to log out, send back to Log in screen to loop infinitely
 
+        Scanner sc = new Scanner(System.in);
         boolean loop = true;
         boolean repeat = true;
 
+        System.out.println(Format.BOLD + Format.WHITE + "Welcome to _______ Bank!" + Format.RESET);
+
         while (loop) {
-            while (repeat) {
+            while (repeat) {  // Repeat log in if user chooses to try again
+                entry = -1;  // Reset entry index
                 repeat = logIn();
             }
             loop = options();  // If user chooses to log out, return false
         }
+    }
+
+    private static boolean findEntry(int acc, int pin) {
+        CSV db = new CSV(DB);  // Open database
+        CSV.Items item = db.readLine();  // Read first line
+        boolean found = false;
+
+        while (item != null) {
+            if (item.getNum() == acc && item.getPin() == pin) {  // Check if account number and PIN match
+                // Allow advancing
+                found = true;
+                entry = db.getLine();
+            }
+            item = db.readLine();
+        }
+        return found;
     }
 
     public static boolean logIn() {
@@ -42,6 +79,7 @@ public class Main {
         // If invalid ask to try again or sign up
 
         Scanner sc = new Scanner(System.in);
+        String input;
         int acc = -1;
         int pin = -1;
         boolean proceed = false;
@@ -50,8 +88,9 @@ public class Main {
         while (!proceed) {
             System.out.print("Enter your six-digit account number:");
             try {
-                acc = sc.nextInt();
-                if (acc < 100000 || acc > 999999) {  // Account number must be six digits
+                input = sc.nextLine();
+                acc = Integer.parseInt(input);
+                if (input.length() != 6 || acc < 0) {  // Account number must be six digits
                     System.out.println("Account number must a positive six-digit number.");
                 } else {
                     proceed = true;
@@ -75,8 +114,9 @@ public class Main {
         while (!proceed) {
             System.out.print("Enter your four-digit PIN:");
             try {
-                pin = sc.nextInt();
-                if (pin < 1000 || pin > 9999) {  // PIN must be four digits
+                input = sc.nextLine();
+                pin = Integer.parseInt(input);
+                if (input.length() != 4 || pin < 0) {  // PIN must be four digits
                     System.out.println("Account number must be a positive four-digit number.");
                 } else {
                     proceed = true;
@@ -94,31 +134,21 @@ public class Main {
         }
 
         // Check if account number and PIN match
-        CSV db = new CSV(DB);  // Open database
-        CSV.Items item = db.readLine();  // Read first line
-        boolean found = false;
-
-        while (item != null) {
-            if (item.getNum() == acc && item.getPin() == pin) {
-                // Send to options
-                found = true;
-            }
-            item = db.readLine();
-        }
-
-        if (!found) {
+        // If not, ask to try again or sign up
+        if (!findEntry(acc, pin)) {
             System.out.println("Account number and PIN do not match.");
             System.out.println("Would you like to:\n1. Try again\n2. Sign up\n> ");
-            switch (sc.next()) {
-                case "1":
-                    return true;
-                case "2":
+            return switch (sc.next()) {
+                case "1" -> true;
+                case "2" -> {
                     signUp();
-                    return false;
-                default:
+                    yield false;
+                }
+                default -> {
                     System.out.println("Invalid input.");
-                    return true;
-            }
+                    yield true;
+                }
+            };
         }
 
         return false;
@@ -128,7 +158,7 @@ public class Main {
         // Prompt for first and last name
         // Prompt for a new acc_num
         // Prompt for a pin
-        // Send back to logIn
+        // Send back to login
 
         Scanner sc = new Scanner(System.in);
         String firstName;

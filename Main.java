@@ -87,16 +87,12 @@ public class Main {
         // Prompt for account number and validate
         while (!proceed) {
             System.out.print("Enter your six-digit account number:");
-            try {
-                input = sc.nextLine();
+            input = sc.nextLine();
+            if (Validate.validateAccountNumber(input)) {
                 acc = Integer.parseInt(input);
-                if (input.length() != 6 || acc < 0) {  // Account number must be six digits
-                    System.out.println("Account number must a positive six-digit number.");
-                } else {
-                    proceed = true;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Account number must contain only integers.");
+                proceed = true;
+            } else {
+                System.out.println("Account number must be a positive six-digit number.");
             }
 
             if (!proceed) {
@@ -161,26 +157,23 @@ public class Main {
         // Send back to login
 
         Scanner sc = new Scanner(System.in);
-        String firstName;
-        String lastName;
+        String firstName, lastName;
         String input;
-        int acc;
-        int pin;
+        int acc, pin;
 
-        //Ask for first and last name
+        // Ask for first and last name
+        // Force non-empty input
         System.out.print("Enter your first name:");
-        firstName = sc.nextLine();
+        do {
+            firstName = sc.nextLine();
+        } while (firstName.isEmpty());
         System.out.print("Enter your last name:");
-        lastName = sc.nextLine();
+        do {
+            lastName = sc.nextLine();
+        } while (lastName.isEmpty());
 
-        //Check if names are valid (is not empty)
-        if (firstName.isEmpty() || lastName.isEmpty()) {
-            throw new InputMismatchException("Name cannot be left blank.");
-        }
-
-        //Asking for new account number
+        // Asking for new account number
         System.out.print("Enter your new six-digit account number:");
-        //Validating account number format
         try {
             input = sc.nextLine();
             acc = Integer.parseInt(input);
@@ -233,17 +226,5 @@ public class Main {
 
     public static void write() {
         // Write to database
-    }
-
-    public static boolean validate(int num, boolean acc) {
-        if (acc) {  // Account number
-            return num >= 100000 && num <= 999999;
-        } else {  // PIN
-            return num >= 1000 && num <= 9999;
-        }
-    }
-
-    public static boolean validate(int pin) {
-        return pin >= 1000 && pin <= 9999;
     }
 }

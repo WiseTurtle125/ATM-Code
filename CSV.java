@@ -1,10 +1,3 @@
-/*
- * TITLE: CSV Parser
- * NAME: James Tung
- * DATE: 12/16/2023
- * DESCRIPTION: This class is used for parsing CSV files.
- */
-
 import java.io.*;
 
 public class CSV {

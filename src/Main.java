@@ -234,20 +234,22 @@ public class Main {
         int accounts = 0;
         int choice;
         double amount;
+        int finish;
         CSV.Items item = db.readLine(entry);
 
 
-        if ()
+        if ((Objects.isNull(item.getChequing()) && (Objects.isNull(item.getSavings())))) {
+            accounts = 0;
+        }
 
-
-        if (!(Objects.isNull(item.getChequing())) {
+        if (!(Objects.isNull(item.getChequing()))) {
             accounts = 1;
         }
 
-        if (!(Objects.isNull(item.getChequing()) && !(Objects.isNull(item.getSavings())) {
+        if (!(Objects.isNull(item.getChequing()) && !(Objects.isNull(item.getSavings())))) {
             accounts = 3;
         }
-        else if (!(Objects.isNull(item.getSavings())) {
+        else if (!(Objects.isNull(item.getSavings()))) {
             accounts = 2;
         }
 
@@ -258,8 +260,13 @@ public class Main {
 
         if (accounts == 1) {
             System.out.println("How much would you like to withdraw from your chequing account?");
-            //t&c
-            amount = sc.nextDouble();
+            try {
+                amount = sc.nextDouble();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("You can only withdraw a numerical amount.");
+                withdraw();
+            }
             if (amount<item.getChequing()){
                 //send back or something
             }
@@ -271,8 +278,13 @@ public class Main {
 
         if (accounts == 2) {
             System.out.println("How much would you like to withdraw from your savings account?");
-            //Try and catch the others too for if they inputmismatch
-            amount = sc.nextDouble();
+            try {
+                amount = sc.nextDouble();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("You can only withdraw a numerical amount.");
+                withdraw();
+            }
             if (amount<item.getSavings()){
                 //send back or something
             }
@@ -284,11 +296,21 @@ public class Main {
 
         if (accounts == 3) {
             System.out.println("Which account would you like to withdraw from? 1 for chequing, and 2 for savings.");
-            //Try and catch this
-            choice = sc.nextInt();
+            try {
+                choice = sc.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid account.");
+            }
             if (choice == 1){
-                System.out.println("How much would you like to withdraw from your savings account?");
-                amount = sc.nextDouble();
+                System.out.println("How much would you like to withdraw from your chequing account?");
+                try {
+                    amount = sc.nextDouble();
+                }
+                catch (InputMismatchException e) {
+                    System.out.println("You can only withdraw a numerical amount.");
+                    withdraw();
+                }
                 if (amount<item.getSavings()){
                     //send back or something
                 }
@@ -297,9 +319,15 @@ public class Main {
                     withdraw();
                 }
             }
-            if (choice == 1){
+            if (choice == 2){
                 System.out.println("How much would you like to withdraw from your savings account?");
-                amount = sc.nextDouble();
+                try {
+                    amount = sc.nextDouble();
+                }
+                catch (InputMismatchException e) {
+                    System.out.println("You can only withdraw a numerical amount.");
+                    withdraw();
+                }
                 if (amount<item.getSavings()){
                     //send back or something
                 }

@@ -1,3 +1,5 @@
+package src;
+
 import java.io.*;
 
 public class CSV {
@@ -129,6 +131,18 @@ public class CSV {
                 bw.newLine();
             }
             bw.write(data.toString());
+            bw.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("The system could not find the specified file. Please ensure the file exists, then try again.");
+        } catch (IOException e) {
+            System.out.println("There was a problem writing to the file.");
+        }
+    }
+
+    public void writeLine(String data) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+            bw.write(data);
             bw.close();
         } catch (FileNotFoundException e) {
             System.out.println("The system could not find the specified file. Please ensure the file exists, then try again.");

@@ -1,7 +1,9 @@
-import java.text.Normalizer;
+package src;
+
+import src.CSV;
+
 import java.util.*;
 import java.lang.*;
-import java.io.*;
 
 public class Main {
     // Constants //
@@ -18,7 +20,7 @@ public class Main {
         static final int CHEQUING = 5;  // Index of chequing balance in database
     }
 
-    final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
+    static final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  // Used for formatting database entries
 
     // Print formatting
     private static class Format {
@@ -59,20 +61,16 @@ public class Main {
         }
     }
 
-    private static boolean findEntry(int acc, int pin) {
+    private static int findEntry(int acc, int pin) {
         CSV.Items item = db.readLine();  // Read first line
-        boolean found = false;
 
         while (item != null) {
             if (item.getNum() == acc && item.getPin() == pin) {  // Check if account number and PIN match
-                // Allow advancing
-                found = true;
-                entry = db.getLine() - 1;
-                break;
+                return db.getLine() - 1;
             }
             item = db.readLine();
         }
-        return found;
+        return -1;
     }
 
     public static boolean logIn() {
@@ -81,6 +79,7 @@ public class Main {
         // If valid and matching send to Option Select
         // If invalid ask to try again or sign up
 
+        // Initialize variables
         Scanner sc = new Scanner(System.in);
         String input;
         int acc = -1;
@@ -89,7 +88,7 @@ public class Main {
 
         // Prompt for account number and validate
         while (!proceed) {
-            System.out.print("Enter your six-digit account number:");
+            System.out.print("Enter your six-digit account number: ");
             input = sc.nextLine();
             if (Validate.validateAccountNumber(input)) {
                 acc = Integer.parseInt(input);
@@ -99,9 +98,10 @@ public class Main {
             }
 
             if (!proceed) {
-                System.out.println("Would you like to sign up instead? (Y/N)");
+                System.out.println("Would you like to sign up instead? (Y/N)\n> ");
                 if (sc.nextLine().equals("y")) {
                     signUp();
+                    return false;  // Exit log in loop
                 }
             }
         }
@@ -110,7 +110,7 @@ public class Main {
 
         // Prompt for PIN and validate
         while (!proceed) {
-            System.out.print("Enter your four-digit PIN:");
+            System.out.print("Enter your four-digit PIN: ");
             input = sc.nextLine();
             if (Validate.validatePin(input)) {
                 pin = Integer.parseInt(input);
@@ -120,7 +120,7 @@ public class Main {
             }
 
             if (!proceed) {
-                System.out.println("Would you like to try again with a different account number? (Y/N)");
+                System.out.println("Would you like to try again with a different account number? (Y/N)\n> ");
                 if (sc.nextLine().equals("y")) {
                     return true;
                 }
@@ -129,7 +129,7 @@ public class Main {
 
         // Check if account number and PIN match
         // If not, ask to try again or sign up
-        if (!findEntry(acc, pin)) {
+        if ((entry = findEntry(acc, pin)) == -1) {
             System.out.println("Account number and PIN do not match.");
             System.out.println("Would you like to:\n1. Try again\n2. Sign up\n> ");
             return switch (sc.next()) {
@@ -157,47 +157,50 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         String firstName, lastName;
         String input;
-        int acc, pin;
+        int acc = -1;
+        int pin = -1;
+        boolean proceed = false;
 
         // Ask for first and last name
         // Force non-empty input
         do {
-            System.out.print("Enter your first name:");
+            System.out.print("Enter your first name: ");
             firstName = sc.nextLine();
         } while (firstName.isEmpty());
 
-        System.out.print("Enter your last name:");
+        System.out.print("Enter your last name: ");
         do {
             lastName = sc.nextLine();
         } while (lastName.isEmpty());
 
         // Asking for new account number
-        System.out.print("Enter your new six-digit account number:");
-        input = sc.nextLine();
-        if (Validate.validateAccountNumber(input)) {
-            acc = Integer.parseInt(input);
-        } else {
-            System.out.println("Account number must be a positive six-digit number.");
-        }
-        //Wait for Comrade James to Complete Code
-        if () {
-            throw new InputMismatchException("The account number must be six-digits.");
+        while (!proceed) {
+            System.out.print("Enter your new six-digit account number: ");
+            input = sc.nextLine();
+            if (Validate.validateAccountNumber(input)) {
+                acc = Integer.parseInt(input);
+                proceed = true;
+            } else {
+                System.out.println("Account number must be a positive six-digit number.");
+            }
         }
 
-        //Asking for new pin
-        System.out.print("Enter a pin for your new account:");
-        //Validating pin format
-        try {
-            pin = sc.nextInt();
+        proceed = false;  // Reset for PIN validation
+
+        // Asking for new pin
+        while (!proceed) {
+            System.out.print("Enter a pin for your new account:");
+            input = sc.nextLine();
+            if (Validate.validatePin(input)) {
+                pin = Integer.parseInt(input);
+                proceed = true;
+            } else {
+                System.out.println("PIN must be a positive four-digit number.");
+            }
         }
-        catch (InputMismatchException e) {
-            //Wait for Comrade James to find out how to loop asking
-            System.out.println("Pin must contain only integers.");
-        }
-        //Wait for Comrade James to Complete Code
-        if () {
-            throw new InputMismatchException("The Pin number must be four-digits.");
-        }
+
+        // Write new entry to database
+        db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, 0.0, 0.0));
     }
 
     public static boolean options() {
@@ -220,16 +223,8 @@ public class Main {
         //If there is no account is sends an error
 
         CSV.Items item = db.readLine(entry);
-        if (item.getSavings != null) {
+        if (item.getSavings() != null) {
 
         }
-    }
-
-    public static void read() {
-        // Read from database
-    }
-
-    public static void write() {
-        // Write to database
     }
 }

@@ -1,3 +1,5 @@
+package src;
+
 public class Validate {
     public static boolean validateAccountNumber(String accountNumber) {
         return accountNumber.matches("[0-9]{6}");

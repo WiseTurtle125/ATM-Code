@@ -255,6 +255,7 @@ public class Main {
 
         if (accounts == 1) {
             System.out.println("How much would you like to withdraw from your chequing account?");
+            //t&c
             amount = sc.nextDouble();
             if (amount<item.getChequing()){
                 //send back or something

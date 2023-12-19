@@ -1,7 +1,5 @@
 package src;
 
-import src.CSV;
-
 import java.util.*;
 import java.lang.*;
 
@@ -9,6 +7,7 @@ public class Main {
     // Constants //
     static final String DB = "db.csv";  // Path to database file
     static CSV db = new CSV(DB);  // Open database
+    static int entry;  // Index of current entry in database
 
     // Database indices
     private static class Data {
@@ -36,8 +35,6 @@ public class Main {
         static final String WHITE = "\033[37m";  // White text
     }
 
-    static int entry;  // Index of current entry in database
-
     public static void main(String[] args) {
         // Log in and prompt for acc_num and pin
         // If valid send to Option Select
@@ -51,11 +48,12 @@ public class Main {
         System.out.println(Format.BOLD + Format.WHITE + "Welcome to Tungular Bank!" + Format.RESET);
 
         while (true) {
+            while (repeat) {  // Repeat log in if user chooses to try again
+                entry = -1;  // Reset entry index
+                repeat = logIn();
+            }
+
             while (loop) {
-                while (repeat) {  // Repeat log in if user chooses to try again
-                    entry = -1;  // Reset entry index
-                    repeat = logIn();
-                }
                 loop = options();  // If user chooses to log out, return false
             }
         }
@@ -90,7 +88,7 @@ public class Main {
         while (!proceed) {
             System.out.print("Enter your six-digit account number: ");
             input = sc.nextLine();
-            if (Validate.validateAccountNumber(input)) {
+            if (Validate.accountNumber(input)) {
                 acc = Integer.parseInt(input);
                 proceed = true;
             } else {
@@ -112,7 +110,7 @@ public class Main {
         while (!proceed) {
             System.out.print("Enter your four-digit PIN: ");
             input = sc.nextLine();
-            if (Validate.validatePin(input)) {
+            if (Validate.pin(input)) {
                 pin = Integer.parseInt(input);
                 proceed = true;
             } else {
@@ -177,7 +175,7 @@ public class Main {
         while (!proceed) {
             System.out.print("Enter your new six-digit account number: ");
             input = sc.nextLine();
-            if (Validate.validateAccountNumber(input)) {
+            if (Validate.accountNumber(input)) {
                 acc = Integer.parseInt(input);
                 proceed = true;
             } else {
@@ -191,7 +189,7 @@ public class Main {
         while (!proceed) {
             System.out.print("Enter a pin for your new account:");
             input = sc.nextLine();
-            if (Validate.validatePin(input)) {
+            if (Validate.pin(input)) {
                 pin = Integer.parseInt(input);
                 proceed = true;
             } else {
@@ -207,14 +205,24 @@ public class Main {
         // Prompt for what the user wants to do
         // Withdraw, Deposit, Open or Close Accounts, View Balance, Change Pin, and Log-out
 
-        System.out.println("Type 1 to withdraw:");
-        System.out.println("Type 2 to deposit:");
-        System.out.println("Type 3 to open an account:");
-        System.out.println("Type 4 to close an account:");
-        System.out.println("Type 5 to change your pin:");
-        System.out.println("Type 6 to logout:");
+        // Initialize variables
+        Scanner sc = new Scanner(System.in);
+        String input = "";
 
-        return true;
+        // Prompt for action
+        System.out.println("What would you like to do?\n1. Withdraw\n2. Deposit\n3. Open an Account\n4. Close Accounts\n5. View Balance\n6. Change Pin\n7. Log-out\n> ");
+        switch (input = sc.nextLine()) {
+            case "1" -> withdraw();
+            case "2" -> deposit();
+            case "3" -> openAccount();
+            case "4" -> closeAccount();
+            case "5" -> viewBalance();
+            case "6" -> changePin();
+            case "7" -> System.out.println(Format.BOLD + "Logging out..." + Format.RESET);
+            default -> System.out.println("Invalid input.");
+        }
+
+        return !input.equals("7");  // Return false if user chooses to log out
     }
 
     public static void withdraw() {

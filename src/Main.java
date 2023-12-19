@@ -92,11 +92,11 @@ public class Main {
                 acc = Integer.parseInt(input);
                 proceed = true;
             } else {
-                System.out.println("Account number must be a positive six-digit number.");
+                System.out.println(Format.RED + "Account number must be a positive six-digit number." + Format.RESET);
             }
 
             if (!proceed) {
-                System.out.println("Would you like to sign up instead? (Y/N)\n> ");
+                System.out.print("Would you like to sign up instead? (Y/N)\n> ");
                 if (sc.nextLine().equals("y")) {
                     signUp();
                     return false;  // Exit log in loop
@@ -114,11 +114,11 @@ public class Main {
                 pin = Integer.parseInt(input);
                 proceed = true;
             } else {
-                System.out.println("PIN must be a positive four-digit number.");
+                System.out.println(Format.RED + "PIN must be a positive four-digit number." + Format.RESET);
             }
 
             if (!proceed) {
-                System.out.println("Would you like to try again with a different account number? (Y/N)\n> ");
+                System.out.print("Would you like to try again with a different account number? (Y/N)\n> ");
                 if (sc.nextLine().equals("y")) {
                     return true;
                 }
@@ -128,8 +128,8 @@ public class Main {
         // Check if account number and PIN match
         // If not, ask to try again or sign up
         if ((entry = findEntry(acc, pin)) == -1) {
-            System.out.println("Account number and PIN do not match.");
-            System.out.println("Would you like to:\n1. Try again\n2. Sign up\n> ");
+            System.out.println(Format.RED + "Account number and PIN do not match." + Format.RESET);
+            System.out.print("Would you like to:\n1. Try again\n2. Sign up\n> ");
             return switch (sc.next()) {
                 case "1" -> true;
                 case "2" -> {
@@ -137,7 +137,7 @@ public class Main {
                     yield false;
                 }
                 default -> {
-                    System.out.println("Invalid input.");
+                    System.out.println(Format.RED + "Invalid input." + Format.RESET);
                     yield true;
                 }
             };
@@ -179,7 +179,7 @@ public class Main {
                 acc = Integer.parseInt(input);
                 proceed = true;
             } else {
-                System.out.println("Account number must be a positive six-digit number.");
+                System.out.println(Format.RED + "Account number must be a positive six-digit number." + Format.RESET);
             }
         }
 
@@ -193,7 +193,7 @@ public class Main {
                 pin = Integer.parseInt(input);
                 proceed = true;
             } else {
-                System.out.println("PIN must be a positive four-digit number.");
+                System.out.println(Format.RED + "PIN must be a positive four-digit number." + Format.RESET);
             }
         }
 
@@ -210,16 +210,16 @@ public class Main {
         String input = "";
 
         // Prompt for action
-        System.out.println("What would you like to do?\n1. Withdraw\n2. Deposit\n3. Open an Account\n4. Close Accounts\n5. View Balance\n6. Change Pin\n7. Log-out\n> ");
-        switch (input = sc.nextLine()) {
-            case "1" -> withdraw();
-            case "2" -> deposit();
-            case "3" -> openAccount();
-            case "4" -> closeAccount();
-            case "5" -> viewBalance();
-            case "6" -> changePin();
-            case "7" -> System.out.println(Format.BOLD + "Logging out..." + Format.RESET);
-            default -> System.out.println("Invalid input.");
+        System.out.print("What would you like to do?\n1. Withdraw\n2. Deposit\n3. Open an Account\n4. Close Accounts\n5. View Balance\n6. Change Pin\n7. Log out\n> ");
+        switch (input = sc.nextLine().toLowerCase()) {
+            case "1", "withdraw" -> withdraw();
+            case "2", "deposit" -> deposit();
+            case "3", "open", "open account" -> openAccount();
+            case "4", "close", "close account" -> closeAccount();
+            case "5", "balance", "view balance" -> viewBalance();
+            case "6", "change pin" -> changePin();
+            case "7", "log out" -> System.out.println(Format.BOLD + "Logging out..." + Format.RESET);
+            default -> System.out.println(Format.RED + "Invalid input." + Format.RESET);
         }
 
         return !input.equals("7");  // Return false if user chooses to log out
@@ -232,11 +232,14 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         int accounts = 0;
-        double amount;
         int choice;
+        double amount;
+        CSV.Items item = db.readLine(entry);
 
-        CSV.Items item;
-        item = db.readLine(entry);
+
+        if ()
+
+
         if (!(Objects.isNull(item.getChequing())) {
             accounts = 1;
         }

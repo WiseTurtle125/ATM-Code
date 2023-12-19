@@ -48,7 +48,7 @@ public class Main {
         boolean loop = true;
         boolean repeat = true;
 
-        System.out.println(Format.BOLD + Format.WHITE + "Welcome to _______ Bank!" + Format.RESET);
+        System.out.println(Format.BOLD + Format.WHITE + "Welcome to Tungular Bank!" + Format.RESET);
 
         while (true) {
             while (loop) {
@@ -222,9 +222,80 @@ public class Main {
         //If there is one account is automatically chooses
         //If there is no account is sends an error
 
-        CSV.Items item = db.readLine(entry);
-        if (item.getSavings() != null) {
+        Scanner sc = new Scanner(System.in);
+        int accounts = 0;
+        double amount;
+        int choice;
 
+        CSV.Items item;
+        item = db.readLine(entry);
+        if (!(Objects.isNull(item.getChequing())) {
+            accounts = 1;
+        }
+
+        if (!(Objects.isNull(item.getChequing()) && !(Objects.isNull(item.getSavings())) {
+            accounts = 3;
+        }
+        else if (!(Objects.isNull(item.getSavings())) {
+            accounts = 2;
+        }
+
+        if (accounts == 0) {
+            System.out.println("No accounts to withdraw from, please open an account first.");
+            options();
+        }
+
+        if (accounts == 1) {
+            System.out.println("How much would you like to withdraw from your chequing account?");
+            amount = sc.nextDouble();
+            if (amount<item.getChequing()){
+                //send back or something
+            }
+            else {
+                System.out.println("You cannot withdraw that much, insufficient funds.");
+                withdraw();
+            }
+        }
+
+        if (accounts == 2) {
+            System.out.println("How much would you like to withdraw from your savings account?");
+            //Try and catch the others too for if they inputmismatch
+            amount = sc.nextDouble();
+            if (amount<item.getSavings()){
+                //send back or something
+            }
+            else {
+                System.out.println("You cannot withdraw that much, insufficient funds.");
+                withdraw();
+            }
+        }
+
+        if (accounts == 3) {
+            System.out.println("Which account would you like to withdraw from? 1 for chequing, and 2 for savings.");
+            //Try and catch this
+            choice = sc.nextInt();
+            if (choice == 1){
+                System.out.println("How much would you like to withdraw from your savings account?");
+                amount = sc.nextDouble();
+                if (amount<item.getSavings()){
+                    //send back or something
+                }
+                else {
+                    System.out.println("You cannot withdraw that much, insufficient funds.");
+                    withdraw();
+                }
+            }
+            if (choice == 1){
+                System.out.println("How much would you like to withdraw from your savings account?");
+                amount = sc.nextDouble();
+                if (amount<item.getSavings()){
+                    //send back or something
+                }
+                else {
+                    System.out.println("You cannot withdraw that much, insufficient funds.");
+                    withdraw();
+                }
+            }
         }
     }
 }

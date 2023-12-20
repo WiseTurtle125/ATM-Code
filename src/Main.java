@@ -3,6 +3,8 @@ package src;
 import java.util.*;
 import java.lang.*;
 
+// SKUJA ADVICE: CHECK IF NULL IS NULL AND NOT JUST EMPTY OR ANY OTHER VALUE, IF SO, MAKE AN IF TO TELL PROGRAM THAT THAT EQUALS NULL
+
 public class Main {
     //  Constants // 
     static final String DB = "db.csv";  //  Path to database file
@@ -517,6 +519,91 @@ public class Main {
                 System.out.println("Invalid account.");
                 openAccount();
             }
+            if (choice == 1) {
+                System.out.println("Account created, sending back to options.");
+                // insert code to make chequing = $0.00 and not null
+                options();
+            }
+            if (choice == 2) {
+                System.out.println("Account created, sending back to options.");
+                // insert code to make savings = $0.00 and not null
+                options();
+            }
+        }
+        if (accounts == 1) {
+            System.out.println("Savings account created, sending back to options.");
+            // insert code to make savings account = $0.00 and not null
+            options();
+        }
+        if (accounts == 2) {
+            System.out.println("Chequing account created, sending back to options.");
+            // insert code to make chequing account = $0.00 and not null
+            options();
+        }
+        if (accounts == 3) {
+            System.out.println("Error, both accounts already open, sending back to options.");
+            options();
+        }
+    }
+    public static void closeAccount() {
+        // Prompts the user if they want to close an account
+        // if one account, it automatically closes the other
+        // if no accounts, it outputs error and sends back to options
+        // if two accounts, asks first, then closes
+
+        Scanner sc = new Scanner(System.in);
+        int accounts =0;
+        int choice =0;
+        CSV.Items item = db.readLine(entry);
+
+        if ((Objects.isNull(item.getChequing()) && (Objects.isNull(item.getSavings())))) {
+            accounts = 0;
+        }
+
+        if (!(Objects.isNull(item.getChequing()))) {
+            accounts = 1;
+        }
+
+        if (!(Objects.isNull(item.getChequing()) && !(Objects.isNull(item.getSavings())))) {
+            accounts = 3;
+        }
+        else if (!(Objects.isNull(item.getSavings()))) {
+            accounts = 2;
+        }
+
+        if (accounts == 3) {
+            System.out.println("What account would you like to close? 1 for chequing and 2 for savings.");
+            try {
+                choice = sc.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid account.");
+                openAccount();
+            }
+            if (choice == 1) {
+                System.out.println("Account closed, sending back to options.");
+                // insert code to make chequing = null
+                options();
+            }
+            if (choice == 2) {
+                System.out.println("Account closed, sending back to options.");
+                // insert code to make savings = null
+                options();
+            }
+        }
+        if (accounts == 1) {
+            System.out.println("Chequing account closed, sending back to options.");
+            // insert code to make chequing account = null
+            options();
+        }
+        if (accounts == 2) {
+            System.out.println("Savings account closed, sending back to options.");
+            // insert code to make savings account = null
+            options();
+        }
+        if (accounts == 0) {
+            System.out.println("Error, no accounts to close, sending back to options.");
+            options();
         }
     }
 }

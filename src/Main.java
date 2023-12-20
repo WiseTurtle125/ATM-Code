@@ -311,6 +311,7 @@ public class Main {
             }
             catch (InputMismatchException e) {
                 System.out.println("Invalid account.");
+                withdraw();
             }
             if (choice == 1){
                 System.out.println("How much would you like to withdraw from your chequing account?");
@@ -398,7 +399,7 @@ public class Main {
                 amount = sc.nextDouble();
             }
             catch (InputMismatchException e) {
-                System.out.println("You can only withdraw a positive numerical amount.");
+                System.out.println("You can only deposit a positive numerical amount.");
                 deposit();
             }
             if (amount<0) {
@@ -417,7 +418,7 @@ public class Main {
                 amount = sc.nextDouble();
             }
             catch (InputMismatchException e) {
-                System.out.println("You can only withdraw a positive numerical amount.");
+                System.out.println("You can only deposit a positive numerical amount.");
                 deposit();
             }
             if (amount<0) {
@@ -431,34 +432,31 @@ public class Main {
         }
 
         if (accounts == 3) {
-            System.out.println("Which account would you like to withdraw from? 1 for chequing, and 2 for savings.");
+            System.out.println("Which account would you like to deposit to? 1 for chequing, and 2 for savings.");
             try {
                 choice = sc.nextInt();
             }
             catch (InputMismatchException e) {
                 System.out.println("Invalid account.");
+                deposit();
             }
             if (choice == 1){
-                System.out.println("How much would you like to withdraw from your chequing account?");
+                System.out.println("How much would you like to deposit to your chequing account?");
                 try {
                     amount = sc.nextDouble();
                 }
                 catch (InputMismatchException e) {
-                    System.out.println("You can only withdraw a numerical amount.");
+                    System.out.println("You can only deposit a numerical amount.");
                     deposit();
                 }
                 if (amount<0) {
                     System.out.println("You can only deposit a positive amount.");
                     deposit();
                 }
-                if (amount<item.getSavings()){
+                else {
                     // send back or something
                     System.out.println("Transaction complete, returning to options.");
                     options();
-                }
-                else {
-                    System.out.println("You cannot withdraw that much, insufficient funds.");
-                    deposit();
                 }
             }
             if (choice == 2){
@@ -470,15 +468,54 @@ public class Main {
                     System.out.println("You can only withdraw a numerical amount.");
                     deposit();
                 }
-                if (amount<item.getSavings()){
+                if (amount<0) {
+                    System.out.println("You can only deposit a positive amount.");
+                    deposit();
+                }
+                else {
                     // send back or something
                     System.out.println("Transaction complete, returning to options.");
                     options();
                 }
-                else {
-                    System.out.println("You cannot withdraw that much, insufficient funds.");
-                    deposit();
-                }
+            }
+        }
+    }
+
+    public static void openAccount() {
+        // Prompts the user if they want to create an account
+        // if one account, it automatically creates the other
+        // if two accounts, it outputs error and sends back to options
+        // if no accounts, asks first, then creates
+
+        Scanner sc = new Scanner(System.in);
+        int accounts =0;
+        int choice =0;
+        CSV.Items item = db.readLine(entry);
+
+        // RUN BY MR.SKUJA TO SEE IF I CAN PLACE THIS IN MAIN OR ANOTHER METHOD TO KEEP FROM REPEATING
+        if ((Objects.isNull(item.getChequing()) && (Objects.isNull(item.getSavings())))) {
+            accounts = 0;
+        }
+
+        if (!(Objects.isNull(item.getChequing()))) {
+            accounts = 1;
+        }
+
+        if (!(Objects.isNull(item.getChequing()) && !(Objects.isNull(item.getSavings())))) {
+            accounts = 3;
+        }
+        else if (!(Objects.isNull(item.getSavings()))) {
+            accounts = 2;
+        }
+
+        if (accounts == 0) {
+            System.out.println("What account would you like to open? 1 for chequing and 2 for savings.");
+            try {
+                choice = sc.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid account.");
+                openAccount();
             }
         }
     }

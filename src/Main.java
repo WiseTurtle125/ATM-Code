@@ -606,4 +606,91 @@ public class Main {
             options();
         }
     }
+
+    public static void viewBalance() {
+        // This method prints out the balances of your accounts
+        // if there are no accounts, it sends an error and redirects back to options
+
+        // FOR THE REDIRECT OPTIONS YOU DON'T NEED 2 IF IT AUTOMATICALLY CHOOSES WHICH TO DISPLAY
+
+        Scanner sc = new Scanner(System.in);
+        int accounts = 0;
+        int choice = 0;
+        CSV.Items item = db.readLine(entry);
+
+        if ((Objects.isNull(item.getChequing()) && (Objects.isNull(item.getSavings())))) {
+            accounts = 0;
+        }
+
+        if (!(Objects.isNull(item.getChequing()))) {
+            accounts = 1;
+        }
+
+        if (!(Objects.isNull(item.getChequing()) && !(Objects.isNull(item.getSavings())))) {
+            accounts = 3;
+        }
+        else if (!(Objects.isNull(item.getSavings()))) {
+            accounts = 2;
+        }
+
+        if (accounts == 0) {
+            System.out.println("No accounts to check, returning to options.");
+            options();
+        }
+        if (accounts == 1) {
+            System.out.println("Your chequing account has $" + item.getChequing());
+            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
+            try {
+                choice = sc.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid option.");
+            }
+            if (choice == 1) {
+                System.out.println("Returning to viewing accounts balance.");
+                viewBalance();
+            }
+            if (choice == 2) {
+                System.out.println("Returning to options.");
+                options();
+            }
+        }
+        if (accounts == 2) {
+            System.out.println("Your savings account has $" + item.getSavings());
+            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
+            try {
+                choice = sc.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid option.");
+            }
+            if (choice == 1) {
+                System.out.println("Returning to viewing accounts balance.");
+                viewBalance();
+            }
+            if (choice == 2) {
+                System.out.println("Returning to options.");
+                options();
+            }
+        }
+        if (accounts == 3) {
+            System.out.println("Your chequing account has $" + item.getChequing());
+            System.out.println("Your savings account has $" + item.getSavings());
+            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
+            try {
+                choice = sc.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Invalid option.");
+            }
+            if (choice == 1) {
+                System.out.println("Returning to viewing accounts balance.");
+                viewBalance();
+            }
+            if (choice == 2) {
+                System.out.println("Returning to options.");
+                options();
+            }
+        }
+    }
 }

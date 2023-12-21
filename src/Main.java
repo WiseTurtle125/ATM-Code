@@ -201,6 +201,7 @@ public class Main {
         }
 
         //  Write new entry to database
+        // JAMES THEY CANNNOT HAVE BOTH ACCOUNTS FROM ThE START THEY HAVE TO OPEM THEMMMMMasd
         db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, 0.0, 0.0));
     }
 
@@ -385,11 +386,11 @@ public class Main {
         double amount = 0;
         CSV.Items item = db.readLine(entry);
 
-        if ((item.getChequing == -1) && (item.getSavings() == -1)))) {
+        if ((item.getChequing() == -1) && (item.getSavings() == -1)) {
             accounts = 0;
-        } else if (!(item.getChequing == -1))) {
+        } else if (!(item.getChequing() == -1)) {
             accounts = 1;
-        } else if (!(item.getSavings() == -1))) {
+        } else if (!(item.getSavings() == -1)) {
             accounts = 2;
         } else {
             accounts = 3;
@@ -487,11 +488,11 @@ public class Main {
         CSV.Items item = db.readLine(entry);
 
         // RUN BY MR.SKUJA TO SEE IF I CAN PLACE THIS IN MAIN OR ANOTHER METHOD TO KEEP FROM REPEATING
-        if ((item.getChequing == -1) && (item.getSavings() == -1)))) {
+        if ((item.getChequing() == -1) && (item.getSavings() == -1)) {
             accounts = 0;
-        } else if (!(item.getChequing == -1))) {
+        } else if (!(item.getChequing() == -1)) {
             accounts = 1;
-        } else if (!(item.getSavings() == -1))) {
+        } else if (!(item.getSavings() == -1)) {
             accounts = 2;
         } else {
             accounts = 3;
@@ -657,5 +658,27 @@ public class Main {
 //                System.out.println("Returning to options.");
 //            }
 //        }
+    }
+
+    public static void changePin() {
+        // This method asks the user for a new pin
+        // if valid it updates the database and returns back to options
+
+        // JUAMES PLEASE CHECK IF THIS CODE WORKSSSSSSS PRETTY PLEASEUH also earlier code can we implement this looping sstem r smth??
+        Scanner sc = new Scanner(System.in);
+        String input;
+        int pin = -1;
+        boolean proceed = false;
+
+        while (!proceed) {
+            System.out.print("Enter a pin:");
+            input = sc.nextLine();
+            if (Validate.pin(input)) {
+                pin = Integer.parseInt(input);
+                proceed = true;
+            } else {
+                System.out.println(Format.RED + "PIN must be a positive four-digit number." + Format.RESET);
+            }
+        }
     }
 }

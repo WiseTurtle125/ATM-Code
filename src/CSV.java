@@ -20,50 +20,22 @@ public class CSV {
             this.last = data[1];
             this.num = Integer.parseInt(data[2]);
             this.pin = Integer.parseInt(data[3]);
-            if (data[4].isBlank())  this.savings = -1;
-            else                    this.savings = Double.parseDouble(data[4]);
-            if (data[5].isBlank())  this.chequing = -1;
-            else                    this.chequing = Double.parseDouble(data[5]);
-        }
-
-        public String getFirst() {
-            return this.first;
-        }
-
-        public String getLast() {
-            return this.last;
-        }
-
-        public String getName() {
-            return this.first + " " + this.last;
-        }
-
-        public int getNum() {
-            return this.num;
-        }
-
-        public int getPin() {
-            return this.pin;
-        }
-
-        public double getSavings() {
-            return this.savings;
-        }
-
-        public double getChequing() {
-            return this.chequing;
+            if (data[4].isBlank()) this.savings = -1;
+            else                   this.savings = Double.parseDouble(data[4]);
+            if (data[5].isBlank()) this.chequing = -1;
+            else                   this.chequing = Double.parseDouble(data[5]);
         }
 
         public String toString() {
             return String.format("%s,%s,%d,%d,%f,%f", first, last, num, pin, savings, chequing);
         }
 
-        public void withdrawChequing(double amount) {
-            this.chequing -= amount;
+        public void updateChequing(double amount) {
+            this.chequing += amount;
         }
 
-        public void withdrawSavings(double amount) {
-            this.savings -= amount;
+        public void updateSavings(double amount) {
+            this.savings += amount;
         }
     }
 

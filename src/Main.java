@@ -1,6 +1,5 @@
 package src;
 
-import java.text.Normalizer;
 import java.util.*;
 import java.lang.*;
 
@@ -11,16 +10,6 @@ public class Main {
     static final String DB = "db.csv";  //  Path to database file
     static CSV db = new CSV(DB);  //  Open database
     static int entry;  //  Index of current entry in database
-
-    // Database indices
-    private static class Data {
-        static final int FIRST = 0;  //  Index of first name in database
-        static final int LAST = 1;  //  Index of last name in database
-        static final int NUM = 2;  //  Index of customer number in database
-        static final int PIN = 3;  //  Index of PIN in database
-        static final int SAVINGS = 4;  //  Index of savings balance in database
-        static final int CHEQUING = 5;  //  Index of chequing balance in database
-    }
 
     static final String TEMPLATE = "%s,%s,%d,%d,%f,%f";  //  Used for formatting database entries
 
@@ -66,7 +55,7 @@ public class Main {
         CSV.Items item = db.readLine();  //  Read first line
 
         while (item != null) {
-            if (item.getNum() == acc && item.getPin() == pin) {  //  Check if account number and PIN match
+            if (item.num == acc && item.pin == pin) {  //  Check if account number and PIN match
                 return db.getLine() - 1;
             }
             item = db.readLine();
@@ -153,7 +142,7 @@ public class Main {
         //  Prompt for first and last name
         //  Prompt for a new acc_num
         //  Prompt for a pin
-        //  Send back to login
+        //  Send back to login()
 
         Scanner sc = new Scanner(System.in);
         String firstName, lastName;
@@ -201,8 +190,7 @@ public class Main {
         }
 
         //  Write new entry to database
-        // JAMES THEY CANNNOT HAVE BOTH ACCOUNTS FROM ThE START THEY HAVE TO OPEM THEMMMMMasd
-        db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, 0.0, 0.0));
+        db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, -1.0, -1.0));
     }
 
     public static boolean options() {
@@ -211,7 +199,7 @@ public class Main {
 
         //  Initialize variables
         Scanner sc = new Scanner(System.in);
-        String input = "";
+        String input;
 
         //  Prompt for action
         System.out.print("""
@@ -226,6 +214,7 @@ public class Main {
             >\s"""
         );
 
+        // Select option
         switch (input = sc.nextLine().toLowerCase()) {
             case "1", "withdraw"                ->  withdraw();
             case "2", "deposit"                 ->  deposit();
@@ -249,22 +238,15 @@ public class Main {
         CSV.Items item = db.readLine(entry);
         String input;
         int accounts;
-        double amount = 0;
+        double amount;
 
-        if (item.getChequing() == -1 && item.getSavings() == -1) {
-            accounts = 0;
-        } else if (item.getChequing() != -1 && item.getSavings() == -1) {
-            accounts = 1;
-        } else if (item.getChequing() == -1 && item.getSavings() != -1) {
-            accounts = 2;
-        } else {
-            accounts = 3;
-        }
+        if      (item.chequing == -1 && item.savings == -1) accounts = 0;
+        else if (item.chequing != -1 && item.savings == -1) accounts = 1;
+        else if (item.chequing == -1 && item.savings != -1) accounts = 2;
+        else                                                accounts = 3;
 
         switch (accounts) {
-            case 0 -> {
-                System.out.println("There are no accounts to withdraw from. Please open an account first.");
-            }
+            case 0 -> System.out.println("There are no accounts to withdraw from. Please open an account first.");
             case 1 -> {
                 System.out.print("How much would you like to withdraw from chequing?\n> ");
                 input = sc.nextLine().strip();
@@ -275,18 +257,23 @@ public class Main {
                     amount = Double.parseDouble(input);
                 } catch (NumberFormatException e) {
                     System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                    return;
                 }
 
                 // Sanitize
                 if (amount <= 0) {
                     System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
-                } else if (amount > item.getChequing())  {
+                    return;
+                } else if (amount > item.chequing)  {
                     System.out.println(Format.RED + "Insufficient funds." + Format.RESET);
+                    return;
                 }
 
-                item.withdrawChequing(amount);
+                item.updateChequing(-amount);
 
                 // Update db
+
+                System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
             }
             case 2 -> {
                 System.out.print("How much would you like to withdraw from savings?\n> ");
@@ -298,18 +285,23 @@ public class Main {
                     amount = Double.parseDouble(input);
                 } catch (NumberFormatException e) {
                     System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                    return;
                 }
 
                 // Sanitize
                 if (amount <= 0) {
                     System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
-                } else if (amount > item.getSavings())  {
+                    return;
+                } else if (amount > item.savings)  {
                     System.out.println(Format.RED + "Insufficient funds." + Format.RESET);
+                    return;
                 }
 
-                item.withdrawSavings(amount);
+                item.updateSavings(-amount);
 
                 // Update db
+
+                System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
             }
             case 3 -> {
                 System.out.println("""
@@ -332,18 +324,23 @@ public class Main {
                             amount = Double.parseDouble(input);
                         } catch (NumberFormatException e) {
                             System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                            return;
                         }
 
                         // Sanitize
                         if (amount <= 0) {
                             System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
-                        } else if (amount > item.getChequing())  {
+                            return;
+                        } else if (amount > item.chequing)  {
                             System.out.println(Format.RED + "Insufficient funds." + Format.RESET);
+                            return;
                         }
 
-                        item.withdrawChequing(amount);
+                        item.updateChequing(-amount);
 
                         // Update db
+
+                        System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
                     }
                     case "2" -> {
                         System.out.print("How much would you like to withdraw from savings?\n> ");
@@ -355,18 +352,23 @@ public class Main {
                             amount = Double.parseDouble(input);
                         } catch (NumberFormatException e) {
                             System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                            return;
                         }
 
                         // Sanitize
                         if (amount <= 0) {
                             System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
-                        } else if (amount > item.getSavings())  {
+                            return;
+                        } else if (amount > item.savings)  {
                             System.out.println(Format.RED + "Insufficient funds." + Format.RESET);
+                            return;
                         }
 
-                        item.withdrawSavings(amount);
+                        item.updateSavings(-amount);
 
                         // Update db
+
+                        System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
                     }
                     default -> System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
                 }
@@ -381,98 +383,138 @@ public class Main {
         // If there is no account it sends an error
 
         Scanner sc = new Scanner(System.in);
-        int accounts;
-        int choice = 0;
-        double amount = 0;
         CSV.Items item = db.readLine(entry);
+        String input;
+        int accounts;
+        double amount;
 
-        if ((item.getChequing() == -1) && (item.getSavings() == -1)) {
+        if (item.chequing == -1 && item.savings == -1) {
             accounts = 0;
-        } else if (!(item.getChequing() == -1)) {
+        } else if (item.chequing != -1 && item.savings == -1) {
             accounts = 1;
-        } else if (!(item.getSavings() == -1)) {
+        } else if (item.chequing == -1 && item.savings != -1) {
             accounts = 2;
         } else {
             accounts = 3;
         }
 
-        if (accounts == 0) {
-            System.out.println("No accounts to deposit to, please open an account first.");
-            return;
-        } else if (accounts == 1) {
-            System.out.println("How much would you like to deposit to your chequing account?");
-            try {
-                amount = sc.nextDouble();
-            } catch (InputMismatchException e) {
-                System.out.println("You can only deposit a positive numerical amount.");
-                deposit();
-            }
+        switch (accounts) {
+            case 0 -> System.out.println("No accounts to deposit to, please open an account first.");
+            case 1 -> {
+                System.out.print("How much would you like to deposit to chequing?\n> ");
+                input = sc.nextLine().strip();
+                if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
-            if (amount < 0) {
-                System.out.println("You can only deposit a positive amount.");
-                deposit();
-            } else {
-                System.out.println("Transaction complete, returning to options.");
-                return;
-            }
-        } else if (accounts == 2) {
-            System.out.println("How much would you like to deposit to your savings account?");
-            try {
-                amount = sc.nextDouble();
-            } catch (InputMismatchException e) {
-                System.out.println("You can only deposit a positive numerical amount.");
-                deposit();
-            }
-
-            if (amount < 0) {
-                System.out.println("You can only deposit a positive amount.");
-                deposit();
-            } else {
-                System.out.println("Transaction complete, returning to options.");
-                return;
-            }
-        } else if (accounts == 3) {
-            System.out.println("Which account would you like to deposit to? 1 for chequing, and 2 for savings.");
-            try {
-                choice = sc.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid account.");
-                deposit();
-            }
-
-            if (choice == 1){
-                System.out.println("How much would you like to deposit to your chequing account?");
+                // Parse input
                 try {
-                    amount = sc.nextDouble();
-                } catch (InputMismatchException e) {
-                    System.out.println("You can only deposit a numerical amount.");
-                    deposit();
+                    amount = Double.parseDouble(input);
+                } catch (NumberFormatException e) {
+                    System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                    return;
                 }
 
-                if (amount < 0) {
-                    System.out.println("You can only deposit a positive amount.");
-                    deposit();
-                } else {
-                    // send back or something
-                    System.out.println("Transaction complete, returning to options.");
+                // Sanitize
+                if (amount <= 0) {
+                    System.out.println(Format.RED + "Cannot deposit a zero or a negative value." + Format.RESET);
+                    return;
                 }
-            } else if (choice == 2){
-                System.out.println("How much would you like to withdraw from your savings account?");
+
+                item.updateChequing(amount);
+
+                // Update db
+
+                System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
+            }
+            case 2 -> {
+                System.out.print("How much would you like to deposit to savings?\n> ");
+                input = sc.nextLine().strip();
+                if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
+
+                // Parse input
                 try {
-                    amount = sc.nextDouble();
-                } catch (InputMismatchException e) {
-                    System.out.println("You can only withdraw a numerical amount.");
-                    deposit();
+                    amount = Double.parseDouble(input);
+                } catch (NumberFormatException e) {
+                    System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                    return;
                 }
 
-                if (amount < 0) {
-                    System.out.println("You can only deposit a positive amount.");
-                    deposit();
-                } else {
-                    // send back or something
-                    System.out.println("Transaction complete, returning to options.");
+                // Sanitize
+                if (amount <= 0) {
+                    System.out.println(Format.RED + "Cannot deposit a zero or a negative value." + Format.RESET);
+                    return;
+                }
+
+                item.updateSavings(amount);
+
+                // Update db
+
+                System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
+            }
+            case 3 -> {
+                System.out.println("""
+                    Which account would you like to deposit the money to?
+                     1. Chequing
+                     2. Savings
+                    >\s"""
+                );
+
+                input = sc.nextLine().strip();
+
+                switch (input) {
+                    case "1" -> {
+                        System.out.print("How much would you like to deposit to chequing?\n> ");
+                        input = sc.nextLine().strip();
+                        if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
+
+                        // Parse input
+                        try {
+                            amount = Double.parseDouble(input);
+                        } catch (NumberFormatException e) {
+                            System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                            return;
+                        }
+
+                        // Sanitize
+                        if (amount <= 0) {
+                            System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
+                            return;
+                        }
+
+                        item.updateChequing(amount);
+
+                        // Update db
+
+                        System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
+                    }
+                    case "2" -> {
+                        System.out.print("How much would you like to deposit to savings?\n> ");
+                        input = sc.nextLine().strip();
+                        if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
+
+                        // Parse input
+                        try {
+                            amount = Double.parseDouble(input);
+                        } catch (NumberFormatException e) {
+                            System.out.println(Format.RED + "The provided value must be a number." + Format.RESET + "Returning to options menu.");
+                            return;
+                        }
+
+                        // Sanitize
+                        if (amount <= 0) {
+                            System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
+                            return;
+                        }
+
+                        item.updateSavings(amount);
+
+                        // Update db
+
+                        System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
+                    }
+                    default -> System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
                 }
             }
+            default -> System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
         }
     }
 
@@ -483,38 +525,54 @@ public class Main {
         // if no accounts, asks first, then creates
 
         Scanner sc = new Scanner(System.in);
-        int accounts = 0;
-        int choice = 0;
         CSV.Items item = db.readLine(entry);
+        String input;
+        int accounts;
 
         // RUN BY MR.SKUJA TO SEE IF I CAN PLACE THIS IN MAIN OR ANOTHER METHOD TO KEEP FROM REPEATING
-        if ((item.getChequing() == -1) && (item.getSavings() == -1)) {
+        if (item.chequing == -1 && item.savings == -1) {  // Both uninitialized
             accounts = 0;
-        } else if (!(item.getChequing() == -1)) {
+        } else if (item.chequing != -1 && item.savings == -1) {  // Chequing initialized
             accounts = 1;
-        } else if (!(item.getSavings() == -1)) {
+        } else if (item.chequing == -1 && item.savings != -1) {  // Savings initialized
             accounts = 2;
-        } else {
+        } else {  // Both initialized
             accounts = 3;
         }
 
-        if (accounts == 0) {
-            System.out.println("What account would you like to open? 1 for chequing and 2 for savings.");
-            try {
-                choice = sc.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid account.");
-                openAccount();
+        switch (accounts) {
+            case 0 -> {
+                System.out.println("""
+                    Which account would you like to open?
+                     1. Chequing
+                     2. Savings
+                    >\s"""
+                );
+
+                input = sc.nextLine().strip();
+
+                switch (input) {
+                    case "1" -> {
+                        item.chequing = 0;
+
+                        // Update db
+
+                        System.out.println(Format.GREEN + "Chequing account successfully opened." + Format.RESET + "Returning to options menu.");
+                    }
+                    case "2" -> {
+                        item.savings = 0;
+
+                        // Update db
+
+                        System.out.println(Format.GREEN + "Savings account successfully opened." + Format.RESET + "Returning to options menu.");
+                    }
+                    default -> System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
+                }
             }
-            
-            if (choice == 1) {
-                System.out.println("Account created, sending back to options.");
-                // insert code to make chequing = $0.00 and not null
-            } else if (choice == 2) {
-                System.out.println("Account created, sending back to options.");
-                // insert code to make savings = $0.00 and not null
-            }
-        } else if (accounts == 1) {
+            case 1 -> item.savings = 0;
+        }
+
+        if (accounts == 1) {
             System.out.println("Savings account created, sending back to options.");
             // insert code to make savings account = $0.00 and not null
         } else if (accounts == 2) {
@@ -535,11 +593,11 @@ public class Main {
         int choice =0;
         CSV.Items item = db.readLine(entry);
 
-        if ((item.getChequing() == -1) && (item.getSavings() == -1)) {
+        if ((item.chequing == -1) && (item.savings == -1)) {
             accounts = 0;
-        } else if (!(item.getChequing() == -1)) {
+        } else if (!(item.chequing == -1)) {
             accounts = 1;
-        } else if (!(item.getSavings() == -1)) {
+        } else if (!(item.savings == -1)) {
             accounts = 2;
         } else {
             accounts = 3;
@@ -583,13 +641,13 @@ public class Main {
         boolean display = false;
 
         // My solution
-        if (item.getChequing() == -1) {  // Display balance for chequing account if exists
-            System.out.println("Balance: " + Format.GREEN + "$" + item.getChequing() + Format.RESET);
+        if (item.chequing == -1) {  // Display balance for chequing account if exists
+            System.out.println("Balance: " + Format.GREEN + "$" + item.chequing + Format.RESET);
             display = true;
         }
         
-        if (item.getSavings() == -1) {  // Display balance for savings account if exists, regardless of other accounts
-            System.out.println("Balance: " + Format.GREEN + "$" + item.getSavings() + Format.RESET);
+        if (item.savings == -1) {  // Display balance for savings account if exists, regardless of other accounts
+            System.out.println("Balance: " + Format.GREEN + "$" + item.savings + Format.RESET);
             display = true;
         }
         
@@ -599,11 +657,11 @@ public class Main {
         
         
 //        // Good but inefficient; See above for my solution
-//        if ((Objects.isNull(item.getChequing()) && (Objects.isNull(item.getSavings())))) {
+//        if ((Objects.isNull(item.chequing) && (Objects.isNull(item.savings)))) {
 //            accounts = 0;
-//        } else if (!(Objects.isNull(item.getChequing()))) {
+//        } else if (!(Objects.isNull(item.chequing))) {
 //            accounts = 1;
-//        } else if (!(Objects.isNull(item.getSavings()))) {
+//        } else if (!(Objects.isNull(item.savings))) {
 //            accounts = 2;
 //        } else {
 //            accounts = 3;
@@ -612,7 +670,7 @@ public class Main {
 //        if (accounts == 0) {
 //            System.out.println("No accounts to check, returning to options.");
 //        } else if (accounts == 1) {
-//            System.out.println("Your chequing account has $" + item.getChequing());
+//            System.out.println("Your chequing account has $" + item.chequing);
 //            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
 //            try {
 //                choice = sc.nextInt();
@@ -627,7 +685,7 @@ public class Main {
 //                System.out.println("Returning to options.");
 //            }
 //        } else if (accounts == 2) {
-//            System.out.println("Your savings account has $" + item.getSavings());
+//            System.out.println("Your savings account has $" + item.savings);
 //            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
 //            try {
 //                choice = sc.nextInt();
@@ -642,8 +700,8 @@ public class Main {
 //                System.out.println("Returning to options.");
 //            }
 //        } else if (accounts == 3) {
-//            System.out.println("Your chequing account has $" + item.getChequing());
-//            System.out.println("Your savings account has $" + item.getSavings());
+//            System.out.println("Your chequing account has $" + item.chequing);
+//            System.out.println("Your savings account has $" + item.savings);
 //            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
 //            try {
 //                choice = sc.nextInt();

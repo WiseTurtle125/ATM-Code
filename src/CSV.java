@@ -105,14 +105,22 @@ public class CSV {
     }
 
     // Write to the file
-    public void writeLine(Items data) {
+    public void writeLine(Items data, int line) {
+        String l;
+        int track = 0;
+
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            for (int i = 0; i < line; i++) {
-                bw.write(data.toString());
-                bw.newLine();
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+
+            while ((l = br.readLine()) != null) {
+                if (track == line) {
+                    bw.write(data.toString());
+                } else {
+                    bw.write(l);
+                }
             }
-            bw.write(data.toString());
+            br.close();
             bw.close();
         } catch (FileNotFoundException e) {
             System.out.println("The system could not find the specified file. Please ensure the file exists, then try again.");
@@ -121,10 +129,22 @@ public class CSV {
         }
     }
 
-    public void writeLine(String data) {
+    public void writeLine(String data, int line) {
+        String l;
+        int track = 0;
+
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            bw.write(data);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+
+            while ((l = br.readLine()) != null) {
+                if (track == line) {
+                    bw.write(data);
+                } else {
+                    bw.write(l);
+                }
+            }
+            br.close();
             bw.close();
         } catch (FileNotFoundException e) {
             System.out.println("The system could not find the specified file. Please ensure the file exists, then try again.");

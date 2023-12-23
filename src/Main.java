@@ -190,7 +190,7 @@ public class Main {
         }
 
         //  Write new entry to database
-        db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, -1.0, -1.0));
+        db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, -1.0, -1.0), entry);
     }
 
     public static boolean options() {
@@ -240,10 +240,15 @@ public class Main {
         int accounts;
         double amount;
 
-        if      (item.chequing == -1 && item.savings == -1) accounts = 0;
-        else if (item.chequing != -1 && item.savings == -1) accounts = 1;
-        else if (item.chequing == -1 && item.savings != -1) accounts = 2;
-        else                                                accounts = 3;
+        if (item.chequing == -1 && item.savings == -1) {
+            accounts = 0;
+        } else if (item.chequing != -1 && item.savings == -1) {
+            accounts = 1;
+        } else if (item.chequing == -1 && item.savings != -1) {
+            accounts = 2;
+        } else {
+            accounts = 3;
+        }
 
         switch (accounts) {
             case 0 -> System.out.println("There are no accounts to withdraw from. Please open an account first.");
@@ -271,7 +276,8 @@ public class Main {
 
                 item.updateChequing(-amount);
 
-                // Update db
+                // Update DB
+                db.writeLine(item, entry);
 
                 System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
             }
@@ -300,6 +306,7 @@ public class Main {
                 item.updateSavings(-amount);
 
                 // Update db
+                db.writeLine(item, entry);
 
                 System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
             }
@@ -339,6 +346,7 @@ public class Main {
                         item.updateChequing(-amount);
 
                         // Update db
+                        db.writeLine(item, entry);
 
                         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
                     }
@@ -367,6 +375,7 @@ public class Main {
                         item.updateSavings(-amount);
 
                         // Update db
+                        db.writeLine(item, entry);
 
                         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
                     }
@@ -422,6 +431,7 @@ public class Main {
                 item.updateChequing(amount);
 
                 // Update db
+                db.writeLine(item, entry);
 
                 System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
             }
@@ -447,6 +457,7 @@ public class Main {
                 item.updateSavings(amount);
 
                 // Update db
+                db.writeLine(item, entry);
 
                 System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
             }
@@ -483,6 +494,7 @@ public class Main {
                         item.updateChequing(amount);
 
                         // Update db
+                        db.writeLine(item, entry);
 
                         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
                     }
@@ -508,6 +520,7 @@ public class Main {
                         item.updateSavings(amount);
 
                         // Update db
+                        db.writeLine(item, entry);
 
                         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
                     }
@@ -555,32 +568,37 @@ public class Main {
                     case "1" -> {
                         item.chequing = 0;
 
-                        // Update db
-
                         System.out.println(Format.GREEN + "Chequing account successfully opened." + Format.RESET + "Returning to options menu.");
                     }
                     case "2" -> {
                         item.savings = 0;
 
-                        // Update db
-
                         System.out.println(Format.GREEN + "Savings account successfully opened." + Format.RESET + "Returning to options menu.");
                     }
-                    default -> System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
+                    default -> {
+                        System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
+                        return;
+                    }
                 }
             }
-            case 1 -> item.savings = 0;
+            case 1 -> {
+                item.savings = 0;
+
+                System.out.println(Format.GREEN + "Savings account successfully opened." + Format.RESET + "Returning to options menu.");
+            }
+            case 2 -> {
+                item.chequing = 0;
+
+                System.out.println(Format.GREEN + "Chequing account successfully opened." + Format.RESET + "Returning to options menu.");
+            }
+            case 3 -> {
+                System.out.println(Format.RED + "Both accounts already open." + Format.RESET + "Returning to options menu.");
+                return;
+            }
         }
 
-        if (accounts == 1) {
-            System.out.println("Savings account created, sending back to options.");
-            // insert code to make savings account = $0.00 and not null
-        } else if (accounts == 2) {
-            System.out.println("Chequing account created, sending back to options.");
-            // insert code to make chequing account = $0.00 and not null
-        } else if (accounts == 3) {
-            System.out.println("Error, both accounts already open, sending back to options.");
-        }
+        // Update db
+        db.writeLine(item, entry);
     }
     public static void closeAccount() {
         // Prompts the user if they want to close an account
@@ -589,18 +607,25 @@ public class Main {
         // if two accounts, asks first, then closes
 
         Scanner sc = new Scanner(System.in);
-        int accounts =0;
+        int accounts;
         int choice =0;
         CSV.Items item = db.readLine(entry);
 
-        if ((item.chequing == -1) && (item.savings == -1)) {
+        if (item.chequing == -1 && item.savings == -1) {  // Both uninitialized
             accounts = 0;
-        } else if (!(item.chequing == -1)) {
+        } else if (item.chequing != -1 && item.savings == -1) {  // Chequing initialized
             accounts = 1;
-        } else if (!(item.savings == -1)) {
+        } else if (item.chequing == -1 && item.savings != -1) {  // Savings initialized
             accounts = 2;
-        } else {
+        } else {  // Both initialized
             accounts = 3;
+        }
+
+        switch (accounts) {
+            case 0 -> System.out.println(Format.RED + "No accounts to close." + Format.RESET + "Returning to options menu.");
+            case 1 -> {
+                System.out.println();
+            }
         }
 
         if (accounts == 0) {
@@ -654,68 +679,6 @@ public class Main {
         if (!display) {  // If neither displays, output this
             System.out.println("No accounts to display balance for. Please create an account first.");
         }
-        
-        
-//        // Good but inefficient; See above for my solution
-//        if ((Objects.isNull(item.chequing) && (Objects.isNull(item.savings)))) {
-//            accounts = 0;
-//        } else if (!(Objects.isNull(item.chequing))) {
-//            accounts = 1;
-//        } else if (!(Objects.isNull(item.savings))) {
-//            accounts = 2;
-//        } else {
-//            accounts = 3;
-//        }
-//
-//        if (accounts == 0) {
-//            System.out.println("No accounts to check, returning to options.");
-//        } else if (accounts == 1) {
-//            System.out.println("Your chequing account has $" + item.chequing);
-//            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
-//            try {
-//                choice = sc.nextInt();
-//            } catch (InputMismatchException e) {
-//                System.out.println("Invalid option.");
-//            }
-//
-//            if (choice == 1) {
-//                System.out.println("Returning to viewing accounts balance.");
-//                viewBalance();
-//            } else if (choice == 2) {
-//                System.out.println("Returning to options.");
-//            }
-//        } else if (accounts == 2) {
-//            System.out.println("Your savings account has $" + item.savings);
-//            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
-//            try {
-//                choice = sc.nextInt();
-//            } catch (InputMismatchException e) {
-//                System.out.println("Invalid option.");
-//            }
-//
-//            if (choice == 1) {
-//                System.out.println("Returning to viewing accounts balance.");
-//                viewBalance();
-//            } else if (choice == 2) {
-//                System.out.println("Returning to options.");
-//            }
-//        } else if (accounts == 3) {
-//            System.out.println("Your chequing account has $" + item.chequing);
-//            System.out.println("Your savings account has $" + item.savings);
-//            System.out.println("Press 1 to view other accounts balance and 2 to return to options.");
-//            try {
-//                choice = sc.nextInt();
-//            } catch (InputMismatchException e) {
-//                System.out.println("Invalid option.");
-//            }
-//
-//            if (choice == 1) {
-//                System.out.println("Returning to viewing accounts balance.");
-//                viewBalance();
-//            } else if (choice == 2) {
-//                System.out.println("Returning to options.");
-//            }
-//        }
     }
 
     public static void changePin() {

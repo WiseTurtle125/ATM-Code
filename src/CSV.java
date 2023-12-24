@@ -10,16 +10,16 @@ public class CSV {
     public static class Items {
         String first;
         String last;
-        int num;
-        int pin;
+        String num;
+        String pin;
         double savings;
         double chequing;
 
         public void parse(String[] data) {
             this.first = data[0];
             this.last = data[1];
-            this.num = Integer.parseInt(data[2]);
-            this.pin = Integer.parseInt(data[3]);
+            this.num = data[2];
+            this.pin = data[3];
             if (data[4].isBlank()) this.savings = -1;
             else                   this.savings = Double.parseDouble(data[4]);
             if (data[5].isBlank()) this.chequing = -1;
@@ -27,7 +27,7 @@ public class CSV {
         }
 
         public String toString() {
-            return String.format("%s,%s,%d,%d,%f,%f", first, last, num, pin, savings, chequing);
+            return String.format("%s,%s,%s,%s,%f,%f", first, last, num, pin, savings, chequing);
         }
 
         public void updateChequing(double amount) {
@@ -42,11 +42,6 @@ public class CSV {
     public CSV(String path) {
         this.path = path;
         file = new File(path);
-    }
-
-    // Get file location
-    public String getPath() {
-        return path;
     }
 
     // Get line number
@@ -70,6 +65,8 @@ public class CSV {
             return null;
         } catch (IOException e) {
             System.out.println("There was a problem reading the file.");
+        } catch (NullPointerException e) {
+            return null;
         }
 
         return data;
@@ -83,6 +80,8 @@ public class CSV {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
 
+            System.out.println("Line = " + line);
+
             for (int i = 0; i < line; i++) {
                 br.readLine();
             }
@@ -94,6 +93,8 @@ public class CSV {
             return null;
         } catch (IOException e) {
             System.out.println("There was a problem reading the file.");
+        } catch (NullPointerException e) {
+            return null;
         }
 
         return data;
@@ -115,11 +116,21 @@ public class CSV {
 
             while ((l = br.readLine()) != null) {
                 if (track == line) {
+                    System.out.println("Writing: " + data.toString());
                     bw.write(data.toString());
                 } else {
+                    System.out.println("Writing: " + l);
                     bw.write(l);
                 }
+
+                track++;
             }
+
+            if (track == line) {
+                System.out.println("Writing: " + data.toString());
+                bw.write(data.toString());
+            }
+
             br.close();
             bw.close();
         } catch (FileNotFoundException e) {
@@ -139,11 +150,21 @@ public class CSV {
 
             while ((l = br.readLine()) != null) {
                 if (track == line) {
+                    System.out.println("Writing: " + data);
                     bw.write(data);
                 } else {
+                    System.out.println("Writing: " + l);
                     bw.write(l);
                 }
+
+                track++;
             }
+
+            if (track == line) {
+                System.out.println("Writing: " + data);
+                bw.write(data);
+            }
+
             br.close();
             bw.close();
         } catch (FileNotFoundException e) {

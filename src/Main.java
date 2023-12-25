@@ -9,7 +9,7 @@ public class Main {
     //  Constants // 
     static final String DB = "db.csv";  //  Path to database file
     static CSV db = new CSV(DB);  //  Open database
-    static int entry = 0;  //  Index of current entry in database
+    static int entry;  //  Index of current entry in database
 
     static final String TEMPLATE = "%s,%s,%s,%s,%f,%f";  //  Used for formatting database entries
 
@@ -33,25 +33,28 @@ public class Main {
         //  If invalid send to Sign Up
         //  If user chooses to log out, send back to Log in screen to loop infinitely
 
-        Scanner sc = new Scanner(System.in);
-        boolean loop = true;
-        boolean repeat = true;
+        boolean repeat;
+        boolean loop;
 
-        System.out.println(Format.BOLD + Format.WHITE + "Welcome to Tungular Bank!" + Format.RESET);
+        System.out.println(Format.BOLD + "Welcome to Tungular Bank!" + Format.RESET);
 
         while (true) {
+            repeat = true;
+            loop = true;
+
             while (repeat) {  //  Repeat log in if user chooses to try again
-                entry = 0;  //  Reset entry index
+                entry = -1;  //  Reset entry index
                 repeat = logIn();
             }
 
-            while (true) {
+            while (loop) {
                 loop = options();  //  If user chooses to log out, return false
             }
         }
     }
 
     private static int findEntry(String acc, String pin) {
+        db.setLine(0);
         CSV.Items item = db.readLine();  //  Read first line
 
         while (item != null) {
@@ -72,16 +75,16 @@ public class Main {
         //  Initialize variables
         Scanner sc = new Scanner(System.in);
         String input;
-        int acc = -1;
-        int pin = -1;
+        String acc = "";
+        String pin = "";
         boolean proceed = false;
 
-        //  Prompt for account number and validate
+        // Prompt for account number and validate
         while (!proceed) {
             System.out.print("Enter your six-digit account number: ");
             input = sc.nextLine();
             if (Validate.accountNumber(input)) {
-                acc = Integer.parseInt(input);
+                acc = input;
                 proceed = true;
             } else {
                 System.out.println(Format.RED + "Account number must be a positive six-digit number." + Format.RESET);
@@ -91,7 +94,7 @@ public class Main {
                 System.out.print("Would you like to sign up instead? (Y/N)\n> ");
                 if (sc.nextLine().equals("y")) {
                     signUp();
-                    return false;  //  Exit log in loop
+                    return false;  // Exit log in loop
                 }
             }
         }
@@ -103,7 +106,7 @@ public class Main {
             System.out.print("Enter your four-digit PIN: ");
             input = sc.nextLine();
             if (Validate.pin(input)) {
-                pin = Integer.parseInt(input);
+                pin = input;
                 proceed = true;
             } else {
                 System.out.println(Format.RED + "PIN must be a positive four-digit number." + Format.RESET);
@@ -120,7 +123,11 @@ public class Main {
         //  Check if account number and PIN match
         //  If not, ask to try again or sign up
         if ((entry = findEntry(acc, pin)) == -1) {
-            System.out.println(Format.RED + "Account number and PIN do not match." + Format.RESET);
+            if (db.exists(acc)) {
+                System.out.println(Format.RED + "Account number and PIN do not match." + Format.RESET);
+            } else {
+                System.out.println(Format.RED + "Account not found." + Format.RESET);
+            }
             System.out.print("Would you like to:\n1. Try again\n2. Sign up\n> ");
             return switch (sc.next()) {
                 case "1" -> true;
@@ -129,7 +136,7 @@ public class Main {
                     yield false;
                 }
                 default -> {
-                    System.out.println(Format.RED + "Invalid input." + Format.RESET);
+                    System.out.println(Format.RED + "Invalid input." + Format.RESET + "Returning to login.");
                     yield true;
                 }
             };
@@ -167,8 +174,12 @@ public class Main {
             System.out.print("Enter your new six-digit account number: ");
             input = sc.nextLine();
             if (Validate.accountNumber(input)) {
-                acc = input;
-                proceed = true;
+                if (db.exists(input)) {
+                    System.out.println(Format.YELLOW + "Account number in use." + Format.RESET);
+                } else {
+                    acc = input;
+                    proceed = true;
+                }
             } else {
                 System.out.println(Format.RED + "Account number must be a positive six-digit number." + Format.RESET);
             }
@@ -178,7 +189,7 @@ public class Main {
 
         //  Asking for new pin
         while (!proceed) {
-            System.out.print("Enter a pin for your new account: ");
+            System.out.print("Create a four-digit pin for your new account: ");
             input = sc.nextLine();
             if (Validate.pin(input)) {
                 pin = input;
@@ -189,7 +200,7 @@ public class Main {
         }
 
         //  Write new entry to database
-        db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, -1.0, -1.0), entry);
+        entry = db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, -1.0, -1.0), entry);
     }
 
     public static boolean options() {
@@ -256,7 +267,7 @@ public class Main {
                 return;
             }
             case 1 -> {
-                System.out.print("How much would you like to withdraw from chequing?\n> ");
+                System.out.print("How much would you like to withdraw from chequing?\n> $");
                 input = sc.nextLine().strip();
                 if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -277,10 +288,10 @@ public class Main {
                     return;
                 }
 
-                item.updateChequing(-amount);
+                item.chequing -= amount;
             }
             case 2 -> {
-                System.out.print("How much would you like to withdraw from savings?\n> ");
+                System.out.print("How much would you like to withdraw from savings?\n> $");
                 input = sc.nextLine().strip();
                 if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -301,7 +312,7 @@ public class Main {
                     return;
                 }
 
-                item.updateSavings(-amount);
+                item.savings -= amount;
             }
             case 3 -> {
                 System.out.print("""
@@ -315,7 +326,7 @@ public class Main {
 
                 switch (input) {
                     case "1" -> {
-                        System.out.print("How much would you like to withdraw from chequing?\n> ");
+                        System.out.print("How much would you like to withdraw from chequing?\n> $");
                         input = sc.nextLine().strip();
                         if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -336,10 +347,10 @@ public class Main {
                             return;
                         }
 
-                        item.updateChequing(-amount);
+                        item.chequing -= amount;
                     }
                     case "2" -> {
-                        System.out.print("How much would you like to withdraw from savings?\n> ");
+                        System.out.print("How much would you like to withdraw from savings?\n> $");
                         input = sc.nextLine().strip();
                         if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -360,7 +371,7 @@ public class Main {
                             return;
                         }
 
-                        item.updateSavings(-amount);
+                        item.savings -= amount;
                     }
                     default -> {
                         System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
@@ -406,7 +417,7 @@ public class Main {
                 return;
             }
             case 1 -> {
-                System.out.print("How much would you like to deposit to chequing?\n> ");
+                System.out.print("How much would you like to deposit to chequing?\n> $");
                 input = sc.nextLine().strip();
                 if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -424,10 +435,10 @@ public class Main {
                     return;
                 }
 
-                item.updateChequing(amount);
+                item.chequing += amount;
             }
             case 2 -> {
-                System.out.print("How much would you like to deposit to savings?\n> ");
+                System.out.print("How much would you like to deposit to savings?\n> $");
                 input = sc.nextLine().strip();
                 if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -445,7 +456,7 @@ public class Main {
                     return;
                 }
 
-                item.updateSavings(amount);
+                item.savings += amount;
             }
             case 3 -> {
                 System.out.print("""
@@ -459,7 +470,7 @@ public class Main {
 
                 switch (input) {
                     case "1" -> {
-                        System.out.print("How much would you like to deposit to chequing?\n> ");
+                        System.out.print("How much would you like to deposit to chequing?\n> $");
                         input = sc.nextLine().strip();
                         if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -473,14 +484,14 @@ public class Main {
 
                         // Sanitize
                         if (amount <= 0) {
-                            System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
+                            System.out.println(Format.RED + "Cannot deposit a zero or a negative value." + Format.RESET);
                             return;
                         }
 
-                        item.updateChequing(amount);
+                        item.chequing += amount;
                     }
                     case "2" -> {
-                        System.out.print("How much would you like to deposit to savings?\n> ");
+                        System.out.print("How much would you like to deposit to savings?\n> $");
                         input = sc.nextLine().strip();
                         if (input.startsWith("$")) input = input.substring(1);  // Remove $ if provided
 
@@ -494,11 +505,11 @@ public class Main {
 
                         // Sanitize
                         if (amount <= 0) {
-                            System.out.println(Format.RED + "Cannot withdraw a zero or a negative value." + Format.RESET);
+                            System.out.println(Format.RED + "Cannot deposit a zero or a negative value." + Format.RESET);
                             return;
                         }
 
-                        item.updateSavings(amount);
+                        item.savings += amount;
                     }
                     default -> {
                         System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
@@ -591,6 +602,7 @@ public class Main {
         // Update db
         db.writeLine(item, entry);
     }
+
     public static void closeAccount() {
         // Prompts the user if they want to close an account
         // if one account, it automatically closes the other
@@ -598,9 +610,9 @@ public class Main {
         // if two accounts, asks first, then closes
 
         Scanner sc = new Scanner(System.in);
-        int accounts;
-        int choice =0;
         CSV.Items item = db.readLine(entry);
+        int accounts;
+        String input;
 
         if (item.chequing == -1 && item.savings == -1) {  // Both uninitialized
             accounts = 0;
@@ -613,62 +625,77 @@ public class Main {
         }
 
         switch (accounts) {
-            case 0 -> System.out.println(Format.RED + "No accounts to close." + Format.RESET + "Returning to options menu.");
+            case 0 -> {
+                System.out.println(Format.RED + "No accounts to close." + Format.RESET + "Returning to options menu.");
+                return;
+            }
             case 1 -> {
-                System.out.println();
+                item.chequing = -1;
+
+                System.out.println(Format.GREEN + "Chequing account closed." + Format.RESET + "Returning to options menu.");
+            }
+            case 2 -> {
+                item.savings = -1;
+
+                System.out.println(Format.GREEN + "Savings account closed." + Format.RESET + "Returning to options menu.");
+            }
+            case 3 -> {
+                System.out.print("""
+                    Which account would you like to close?
+                     1. Chequing
+                     2. Savings
+                    >\s"""
+                );
+
+                input = sc.nextLine().strip();
+
+                switch (input) {
+                    case "1" -> {
+                        item.chequing = -1;
+
+                        System.out.println(Format.GREEN + "Chequing account successfully closed." + Format.RESET + "Returning to options menu.");
+                    }
+                    case "2" -> {
+                        item.savings = -1;
+
+                        System.out.println(Format.GREEN + "Savings account successfully closed." + Format.RESET + "Returning to options menu.");
+                    }
+                    default -> {
+                        System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
+                        return;
+                    }
+                }
+            }
+            default -> {
+                System.out.println(Format.RED + "Invalid option." + Format.RESET + "Returning to options menu.");
+                return;
             }
         }
 
-        if (accounts == 0) {
-            System.out.println("Error, no accounts to close, sending back to options.");
-        } else if (accounts == 1) {
-            System.out.println("Chequing account closed, sending back to options.");
-            // insert code to make chequing account = null
-        } else if (accounts == 2) {
-            System.out.println("Savings account closed, sending back to options.");
-            // insert code to make savings account = null
-        } else if (accounts == 3) {
-            System.out.println("What account would you like to close? 1 for chequing and 2 for savings.");
-            try {
-                choice = sc.nextInt();
-            }
-            catch (InputMismatchException e) {
-                System.out.println("Invalid account.");
-                openAccount();
-            }
-            if (choice == 1) {
-                System.out.println("Account closed, sending back to options.");
-                // insert code to make chequing = null
-            } else if (choice == 2) {
-                System.out.println("Account closed, sending back to options.");
-                // insert code to make savings = null
-            }
-        }
+        // Update DB
+        db.writeLine(item, entry);
     }
 
     public static void viewBalance() {
         // This method prints out the balances of your accounts
         // if there are no accounts, it sends an error and redirects back to options
 
-        // FOR THE REDIRECT OPTIONS YOU DON'T NEED 2 IF IT AUTOMATICALLY CHOOSES WHICH TO DISPLAY
-
-        Scanner sc = new Scanner(System.in);
         CSV.Items item = db.readLine(entry);
         boolean display = false;
 
         // My solution
-        if (item.chequing == -1) {  // Display balance for chequing account if exists
-            System.out.println("Balance: " + Format.GREEN + "$" + item.chequing + Format.RESET);
+        if (item.chequing != -1) {  // Display balance for chequing account if exists
+            System.out.printf("Chequing Balance: " + Format.GREEN + "$%.2f" + Format.RESET + "%n", item.chequing);
             display = true;
         }
         
-        if (item.savings == -1) {  // Display balance for savings account if exists, regardless of other accounts
-            System.out.println("Balance: " + Format.GREEN + "$" + item.savings + Format.RESET);
+        if (item.savings != -1) {  // Display balance for savings account if exists, regardless of other accounts
+            System.out.printf("Savings Balance: " + Format.GREEN + "$%.2f" + Format.RESET + "%n", item.savings);
             display = true;
         }
         
         if (!display) {  // If neither displays, output this
-            System.out.println("No accounts to display balance for. Please create an account first.");
+            System.out.println(Format.YELLOW + "No accounts to display balance for. Please create an account first." + Format.RESET);
         }
     }
 
@@ -678,19 +705,25 @@ public class Main {
 
         // JUAMES PLEASE CHECK IF THIS CODE WORKSSSSSSS PRETTY PLEASEUH also earlier code can we implement this looping sstem r smth??
         Scanner sc = new Scanner(System.in);
+        CSV.Items item = db.readLine(entry);
         String input;
-        int pin = -1;
+        String pin = "";
         boolean proceed = false;
 
         while (!proceed) {
-            System.out.print("Enter a pin:");
+            System.out.print("Enter your new PIN: ");
             input = sc.nextLine();
             if (Validate.pin(input)) {
-                pin = Integer.parseInt(input);
+                pin = input;
                 proceed = true;
             } else {
                 System.out.println(Format.RED + "PIN must be a positive four-digit number." + Format.RESET);
             }
         }
+
+        item.pin = pin;
+        db.writeLine(item, entry);
+
+        System.out.println(Format.GREEN + "PIN successfully updated." + Format.RESET + "Returning to options menu.");
     }
 }

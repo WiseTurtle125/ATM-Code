@@ -1,6 +1,8 @@
 package src;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class CSV {
     private final String path;
@@ -12,30 +14,22 @@ public class CSV {
         String last;
         String num;
         String pin;
-        double savings;
         double chequing;
+        double savings;
 
         public void parse(String[] data) {
             this.first = data[0];
             this.last = data[1];
             this.num = data[2];
             this.pin = data[3];
-            if (data[4].isBlank()) this.savings = -1;
-            else                   this.savings = Double.parseDouble(data[4]);
-            if (data[5].isBlank()) this.chequing = -1;
-            else                   this.chequing = Double.parseDouble(data[5]);
+            if (data[4].isBlank()) this.chequing = -1;
+            else                   this.chequing = Double.parseDouble(data[4]);
+            if (data[5].isBlank()) this.savings = -1;
+            else                   this.savings = Double.parseDouble(data[5]);
         }
 
         public String toString() {
-            return String.format("%s,%s,%s,%s,%f,%f", first, last, num, pin, savings, chequing);
-        }
-
-        public void updateChequing(double amount) {
-            this.chequing += amount;
-        }
-
-        public void updateSavings(double amount) {
-            this.savings += amount;
+            return String.format("%s,%s,%s,%s,%f,%f", first, last, num, pin, chequing, savings);
         }
     }
 
@@ -80,14 +74,12 @@ public class CSV {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
 
-            System.out.println("Line = " + line);
-
-            for (int i = 0; i < line; i++) {
+            for (int i = 0; i < this.line; i++) {
                 br.readLine();
             }
 
             data.parse(br.readLine().split(","));
-            line++;
+            this.line++;
         } catch (FileNotFoundException e) {
             System.out.println("The system could not find the specified file. Please ensure the file exists, then try again.");
             return null;
@@ -106,29 +98,36 @@ public class CSV {
     }
 
     // Write to the file
-    public void writeLine(Items data, int line) {
+    public int writeLine(Items data, int entry) {
+        String[] lines = new String[1024];
         String l;
         int track = 0;
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            BufferedWriter bw;
 
             while ((l = br.readLine()) != null) {
-                if (track == line) {
-                    System.out.println("Writing: " + data.toString());
-                    bw.write(data.toString());
+                if (track != entry) {
+                    lines[track] = l;
                 } else {
-                    System.out.println("Writing: " + l);
-                    bw.write(l);
+                    lines[track] = data.toString();
                 }
 
                 track++;
             }
 
-            if (track == line) {
-                System.out.println("Writing: " + data.toString());
-                bw.write(data.toString());
+            if (entry == -1) {
+                lines[track] = data.toString();
+            }
+
+            bw = new BufferedWriter(new FileWriter(file));
+            for (String a : lines) {
+                if (Objects.nonNull(a)) {
+                    System.out.println(a);
+                    bw.write(a);
+                    bw.newLine();
+                }
             }
 
             br.close();
@@ -138,31 +137,40 @@ public class CSV {
         } catch (IOException e) {
             System.out.println("There was a problem writing to the file.");
         }
+
+        return track;
     }
 
-    public void writeLine(String data, int line) {
+    public int writeLine(String data, int entry) {
+        String[] lines = new String[1024];
         String l;
         int track = 0;
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            BufferedWriter bw;
 
             while ((l = br.readLine()) != null) {
-                if (track == line) {
-                    System.out.println("Writing: " + data);
-                    bw.write(data);
+                if (track != entry) {
+                    lines[track] = l;
                 } else {
-                    System.out.println("Writing: " + l);
-                    bw.write(l);
+                    lines[track] = data;
                 }
 
                 track++;
             }
 
-            if (track == line) {
-                System.out.println("Writing: " + data);
-                bw.write(data);
+            if (entry == -1) {
+                lines[track] = data;
+            }
+
+            bw = new BufferedWriter(new FileWriter(file));
+            for (String a : lines) {
+                if (Objects.nonNull(a)) {
+                    System.out.println(a);
+                    bw.write(a);
+                    bw.newLine();
+                }
             }
 
             br.close();
@@ -172,5 +180,31 @@ public class CSV {
         } catch (IOException e) {
             System.out.println("There was a problem writing to the file.");
         }
+
+        return track;
+    }
+
+    public boolean exists(String acc) {
+        Items item;
+        String line;
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            while ((line = br.readLine()) != null) {
+                item = new Items();
+                item.parse(line.split(","));
+
+                if (acc.equals(item.num)) {
+                    return true;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("The system could not find the specified file. Please ensure the file exists, then try again.");
+        } catch (IOException e) {
+            System.out.println("There was a problem reading the file.");
+        }
+
+        return false;
     }
 }

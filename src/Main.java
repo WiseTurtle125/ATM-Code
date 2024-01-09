@@ -27,6 +27,54 @@ public class Main {
         static final String WHITE = "\033[37m";     //  White text
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/14/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Roughly documented main loop     ║
+     * ║              ║ logic. Wrote initial loop        ║
+     * ║              ║ prototype.                       ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/15/2023   ║ James Tung                       ║
+     * ║              ║ Updated loop logic to use two    ║
+     * ║              ║ loops.                           ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/17/2023   ║ James Tung                       ║
+     * ║              ║ Updated loop logic to rely on    ║
+     * ║              ║ return values. Also resets       ║
+     * ║              ║ static variables each log in.    ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/18/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Wrapped both loops in a third    ║
+     * ║              ║ infinite loop.                   ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/18/2023   ║ James Tung                       ║
+     * ║              ║ Loops split into two separate    ║
+     * ║              ║ whiles under one infinite loop.  ║
+     * ║              ║ Done to allow independent        ║
+     * ║              ║ repetition of either loop body.  ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ James Tung                       ║
+     * ║              ║ Options loop set to loop         ║
+     * ║              ║ infinitely for debug purposes.   ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Loop variables to control        ║
+     * ║              ║ repetition. <code>entry</code>   ║
+     * ║              ║ reset to -1 before log in.       ║
+     * ║              ║ Options loop condition reset to  ║
+     * ║              ║ catch log out events.            ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * The overarching logic loop.
+     *
+     * <p>Calls each function representing one step in the control cycle.
+     * <p>
+     * Allows the user to log in, and proceed to {@link #options() options}. If the user was unsuccessful, prompt
+     * user to try again or to {@link #signUp() sign up}. Achieves this through a loop which only breaks when the
+     * login/sign up is successful.
+     * <p>Calls {@link #options() options()} repeatedly, until the "log out" response is encountered.
+     */
     public static void main(String[] args) {
         //  Log in and prompt for acc_num and pin
         //  If valid send to Option Select
@@ -53,6 +101,24 @@ public class Main {
         }
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/17/2023   ║ James Tung                       ║
+     * ║              ║ Entire function written during   ║
+     * ║              ║ this period.                     ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Locates an account using and account number and pin.
+     *
+     * <p>Reads through accounts.csv and checks that both account number and PIN match.
+     * <p>Ensured to work since each account number can only be issued once.
+     *
+     * @param acc   The user's account number, used to validate the login.
+     * @param pin   The user's PIN, used to validate the login.
+     * @return      Returns the line number the account information is found on.
+     *              If a matching account-PIN pair is not found, returns -1.
+     */
     private static int findEntry(String acc, String pin) {
         db.setLine(0);
         CSV.Items item = db.readLine();  //  Read first line
@@ -227,14 +293,14 @@ public class Main {
         // Select option
         input = sc.nextLine().toLowerCase();
         switch (input) {
-            case "1", "withdraw"                ->  withdraw();
-            case "2", "deposit"                 ->  deposit();
-            case "3", "open", "open account"    ->  openAccount();
-            case "4", "close", "close account"  ->  closeAccount();
-            case "5", "balance", "view balance" ->  viewBalance();
-            case "6", "change pin"              ->  changePin();
-            case "7", "log out"                 ->  System.out.println(Format.BOLD + "Logging out..." + Format.RESET);
-            default                             ->  System.out.println(Format.RED + "Invalid input." + Format.RESET);
+            case "1" -> withdraw();
+            case "2" -> deposit();
+            case "3" -> openAccount();
+            case "4" -> closeAccount();
+            case "5" -> viewBalance();
+            case "6" -> changePin();
+            case "7" -> System.out.println(Format.BOLD + "Logging out..." + Format.RESET);
+            default  -> System.out.println(Format.RED + "Invalid input." + Format.RESET);
         }
 
         return !input.equals("7");  //  Return false if user chooses to log out
@@ -389,7 +455,7 @@ public class Main {
 
         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
     }
-    
+
     public static void deposit() {
         // Prompts the user which account they want to deposit money to
         // If there is one account is automatically chooses

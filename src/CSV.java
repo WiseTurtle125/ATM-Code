@@ -1,11 +1,9 @@
 package src;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class CSV {
-    private final String path;
     private final File file;
     private int line = 0;
 
@@ -34,8 +32,7 @@ public class CSV {
     }
 
     public CSV(String path) {
-        this.path = path;
-        file = new File(path);
+        this.file = new File(path);
     }
 
     // Get line number
@@ -167,7 +164,6 @@ public class CSV {
             bw = new BufferedWriter(new FileWriter(file));
             for (String a : lines) {
                 if (Objects.nonNull(a)) {
-                    System.out.println(a);
                     bw.write(a);
                     bw.newLine();
                 }

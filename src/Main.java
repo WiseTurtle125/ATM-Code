@@ -108,8 +108,21 @@ public class Main {
      * ║ 12/17/2023   ║ James Tung                       ║
      * ║              ║ Entire function written during   ║
      * ║              ║ this period.                     ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/22/2023   ║ James Tung                       ║
+     * ║              ║ Getters replaced with simple     ║
+     * ║              ║ attribute reads.                 ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ James Tung                       ║
+     * ║              ║ Parameter type changed from int  ║
+     * ║              ║ to String. Equality checking     ║
+     * ║              ║ updated accordingly.             ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ DB entry point set to always be  ║
+     * ║              ║ the beginning of the file.       ║
      * ╚══════════════╩══════════════════════════════════╝
-     * Locates an account using and account number and pin.
+     * Locates an account using an account number and pin.
      *
      * <p>Reads through accounts.csv and checks that both account number and PIN match.
      * <p>Ensured to work since each account number can only be issued once.
@@ -132,6 +145,50 @@ public class Main {
         return -1;
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/14/2023   ║ James Tung                       ║
+     * ║              ║ Method was created. Created a    ║
+     * ║              ║ basic checking system to see if  ║
+     * ║              ║ the account number and PIN were  ║
+     * ║              ║ numbers.                         ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/15/2023   ║ James Tung                       ║
+     * ║              ║ Check if inputs are of the       ║
+     * ║              ║ correct length (account number:  ║
+     * ║              ║ 6, PIN: 4). Return type changed  ║
+     * ║              ║ from void to boolean. Created    ║
+     * ║              ║ the proceed variable. Added code ║
+     * ║              ║ to allow the user to try again   ║
+     * ║              ║ if input was invalid but of the  ║
+     * ║              ║ right format.                    ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/17/2023   ║ James Tung                       ║
+     * ║              ║ Compare inputs to database.      ║
+     * ║              ║ Allow the user to sign up if     ║
+     * ║              ║ they enter an account number     ║
+     * ║              ║ which is not in use yet.         ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Method overhauled to adhere to a ║
+     * ║              ║ good style. Use external methods ║
+     * ║              ║ to check validity of input.      ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Handles the process of logging a user in.
+     *
+     * <p>Asks for an account number and calls an external verify method to ensure the account number is valid
+     *    (6 digits). If invalid, asks the user if they would like to try again, or to sign up instead.
+     * <p>Asks for a PIN and calls an external verification method to ensure the PIN is valid (4 digits). If invalid,
+     *    asks the user if they would like to try again with a different account number. If not, ask for a PIN again.
+     * <p>Search the database file to find a matching account-PIN pair. If a matching pair is not found, check if the
+     *    account number exists. Output corresponding messages, then ask if the user would like to try again with a
+     *    different account-PIN combination or sign up.
+     * <p>If the account-PIN pair is valid, exit method and advance to the next step of the main method.
+     *
+     * @return A boolean to represent whether the system should attempt to log in again or not.
+     */
     public static boolean logIn() {
         //  Prompt for acc and pin
         //  Check if valid
@@ -211,6 +268,67 @@ public class Main {
         return false;
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/14/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created. Described the    ║
+     * ║              ║ overall function of the method   ║
+     * ║              ║ using pseudocode comments.       ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/15/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Created variables for scanner    ║
+     * ║              ║ (Scanner), first name (String),  ║
+     * ║              ║ last name (String), account      ║
+     * ║              ║ number (int) and PIN (int).      ║
+     * ║              ║ Output an error message if name  ║
+     * ║              ║ fields are left blank. Check     ║
+     * ║              ║ that account number is valid     ║
+     * ║              ║ (6 digits) and PIN is valid      ║
+     * ║              ║ (4 digits) using try/catch.      ║
+     * ║              ║ Inline comments added.           ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/18/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Created variable input (String). ║
+     * ║              ║ Use variable input to capture    ║
+     * ║              ║ and validate user input before   ║
+     * ║              ║ assigning to variables.          ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/18/2023   ║ James Tung                       ║
+     * ║              ║ Created variable proceed         ║
+     * ║              ║ (boolean) to loop on invalid     ║
+     * ║              ║ data. Write new user information ║
+     * ║              ║ to database.                     ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Reformatted the method using     ║
+     * ║              ║ switch-cases for strict if       ║
+     * ║              ║ statements, and external methods ║
+     * ║              ║ for validation.                  ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ James Tung                       ║
+     * ║              ║ Variables <code>acc</code> and   ║
+     * ║              ║ <code>pin</pin> now Strings;     ║
+     * ║              ║ variable assignments changed     ║
+     * ║              ║ accordingly.                     ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Check if account number is in    ║
+     * ║              ║ use already, and error if true.  ║
+     * ║              ║ Edited user prompts to be more   ║
+     * ║              ║ specific. Variable               ║
+     * ║              ║ <code>entry</code> set to the    ║
+     * ║              ║ return value of the database     ║
+     * ║              ║ write.                           ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Handles the process of signing a new user up.
+     *
+     * <p>Reads in the first and last name of the user, an account number (6 digits) and a PIN (4 digits). First and
+     *    last name are checked to make sure they are not empty. Account number and PIN are validated (correct length
+     *    and is a number). Account number is checked to make sure it is not in use. Initializes the new user in the
+     *    database with uninitialized bank accounts.
+     */
     public static void signUp() {
         //  Prompt for first and last name
         //  Prompt for a new acc_num
@@ -269,6 +387,35 @@ public class Main {
         entry = db.writeLine(String.format(TEMPLATE, firstName, lastName, acc, pin, -1.0, -1.0), entry);
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/15/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created and logic         ║
+     * ║              ║ outlined in pseudocode comments. ║
+     * ║              ║ Options menu output works.       ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/19/2023   ║ James Tung                       ║
+     * ║              ║ Used a switch case to add        ║
+     * ║              ║ function to the menu.            ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Reformatted method.              ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ James Tung                       ║
+     * ║              ║ Assignment to variable           ║
+     * ║              ║ <code>input</code> extracted     ║
+     * ║              ║ from switch condition.           ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Main menu for selecting next action.
+     *
+     * <p>Use a switch-case to jump to different methods based on user input. If input is "7" (the logout option),
+     *    return false and break the loop in {@link #main(String[] args) main()}.
+     *
+     * @return The return value determines if options should be called again. On a logout event, <code>false</code> is
+     *         returned, breaking out of the loop in main().
+     */
     public static boolean options() {
         //  Prompt for what the user wants to do
         //  Withdraw, Deposit, Open or Close Accounts, View Balance, Change Pin, and Log-out
@@ -306,6 +453,67 @@ public class Main {
         return !input.equals("7");  //  Return false if user chooses to log out
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/18/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created and described in  ║
+     * ║              ║ pseudocode.                      ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/19/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Created variables scanner        ║
+     * ║              ║ (Scanner), accounts (int),       ║
+     * ║              ║ choice (int), finish (int),      ║
+     * ║              ║ amount (double). Checks which    ║
+     * ║              ║ accounts the user has opened,    ║
+     * ║              ║ and changes response             ║
+     * ║              ║ accordingly.                     ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/19/2023   ║ James TUng                       ║
+     * ║              ║ Added try/catch to validate the  ║
+     * ║              ║ withdraw amount (0 < amount <=   ║
+     * ║              ║ balance). Implemented logic to   ║
+     * ║              ║ send user to {@link #options()   ║
+     * ║              ║ options()} upon transaction      ║
+     * ║              ║ completion.                      ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Method reformatted.              ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/22/2023   ║ James Tung                       ║
+     * ║              ║ Inlined some statements/blocks.  ║
+     * ║              ║ Update with new method names     ║
+     * ║              ║ (withdrawChequing ->             ║
+     * ║              ║ updateChequing). Success         ║
+     * ║              ║ messages implemented, and method ║
+     * ║              ║ exits early if invalid data is   ║
+     * ║              ║ encountered.                     ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/23/2023   ║ James Tung                       ║
+     * ║              ║ Reverted the inlining of opened  ║
+     * ║              ║ account checking code. Updates   ║
+     * ║              ║ written to database.             ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ James Tung                       ║
+     * ║              ║ All dead end cases return early. ║
+     * ║              ║ Database write and success       ║
+     * ║              ║ message are at the end of        ║
+     * ║              ║ method.                          ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Account fields accessed directly ║
+     * ║              ║ instead of through a method      ║
+     * ║              ║ (updateChequing(-amount) ->      ║
+     * ║              ║ .chequing -= amount).            ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Withdraw money from a user's accounts.
+     *
+     * <p>Depending on the accounts a user has open, decides (or asks if both are open) which account to withdraw from.
+     *    If neither is open, error and exit.
+     * <p>If the amount entered is zero or negative, or more than is in the account, error and exit. Otherwise, withdraw
+     *    that amount and update the database.
+     */
     public static void withdraw() {
         // Prompts the user which account they want to withdraw money from
         // If there is one account is automatically chooses
@@ -456,6 +664,57 @@ public class Main {
         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/19/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created and described     ║
+     * ║              ║ using pseudocode. Variables      ║
+     * ║              ║ created.                         ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/19/2023   ║ James Tung                       ║
+     * ║              ║ Added try/catch to validate the  ║
+     * ║              ║ withdraw amount (0 < amount <=   ║
+     * ║              ║ balance). Implemented logic to   ║
+     * ║              ║ send user to {@link #options()   ║
+     * ║              ║ options()} upon transaction      ║
+     * ║              ║ completion.                      ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Method reformatted.              ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/22/2023   ║ James Tung                       ║
+     * ║              ║ Replace getter methods with      ║
+     * ║              ║ direct access. Main if statement ║
+     * ║              ║ converted into switch case.      ║
+     * ║              ║ Account selection conditions     ║
+     * ║              ║ simplified. Read input as a      ║
+     * ║              ║ String and cast instead of       ║
+     * ║              ║ reading double.                  ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/23/2023   ║ James Tung                       ║
+     * ║              ║ Write updates to database.       ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Dead end cases exit early;       ║
+     * ║              ║ database write and success       ║
+     * ║              ║ message are at the end of        ║
+     * ║              ║ method.                          ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Access account fields directly   ║
+     * ║              ║ instead of through a method      ║
+     * ║              ║ (updateChequing(amount) ->       ║
+     * ║              ║ .chequing += amount).            ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Deposit money into a user's accounts.
+     *
+     * <p>Depending on the accounts a user has open, decides (or asks if both are open) which account to deposit to.
+     *    If neither are open, error and exit.
+     * <p>If the amount entered is zero or negative, error and exit. Otherwise, deposit to that account and update
+     *    database.
+     */
     public static void deposit() {
         // Prompts the user which account they want to deposit money to
         // If there is one account is automatically chooses
@@ -595,6 +854,46 @@ public class Main {
         System.out.println(Format.GREEN + "Transaction complete." + Format.RESET + "Returning to options menu.");
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/20/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created and outlined in   ║
+     * ║              ║ pseudocode. Variables created.   ║
+     * ║              ║ Accounts check written.          ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/20/2023   ║ James Tung                       ║
+     * ║              ║ Validated user choice when asked ║
+     * ║              ║ to choose an account to open.    ║
+     * ║              ║ Method will go back to {@link #options() options()} ║
+     * ║              ║ upon completion.                 ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Reformatted method.              ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/22/2023   ║ James Tung                       ║
+     * ║              ║ Access account fields directly   ║
+     * ║              ║ instead of through a method      ║
+     * ║              ║ (updateChequing(0) -> .chequing  ║
+     * ║              ║ = 0). If statements replaced     ║
+     * ║              ║ with switch-case.                ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/23/2023   ║ James Tung                       ║
+     * ║              ║ Database write moved to end of   ║
+     * ║              ║ method. Error and success        ║
+     * ║              ║ messages implemented.            ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/24/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Account select menu uses print   ║
+     * ║              ║ instead of println.              ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Opens an account for the user.
+     *
+     * <p>If both accounts are uninitialized, prompt the user to choose one. If one is already opened, open the other.
+     *    If both are open, error and exit.
+     * <p>To open an account, set the balance to 0. Database write is at the end of the method.
+     */
     public static void openAccount() {
         // Prompts the user if they want to create an account
         // if one account, it automatically creates the other
@@ -606,7 +905,6 @@ public class Main {
         String input;
         int accounts;
 
-        // RUN BY MR.SKUJA TO SEE IF I CAN PLACE THIS IN MAIN OR ANOTHER METHOD TO KEEP FROM REPEATING
         if (item.chequing == -1 && item.savings == -1) {  // Both uninitialized
             accounts = 0;
         } else if (item.chequing != -1 && item.savings == -1) {  // Chequing initialized
@@ -669,6 +967,44 @@ public class Main {
         db.writeLine(item, entry);
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/20/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created and documented in ║
+     * ║              ║ pseudocode. Variables made.      ║
+     * ║              ║ Added account check code.        ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/20/2023   ║ James Tung                       ║
+     * ║              ║ Validated user choice when asked ║
+     * ║              ║ to choose an account to close.   ║
+     * ║              ║ Method will go back to {@link #options() options()} ║
+     * ║              ║ upon completion.                 ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Method reformatted.              ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/22/2023   ║ James Tung                       ║
+     * ║              ║ Access account fields directly   ║
+     * ║              ║ instead of through a method      ║
+     * ║              ║ (updateChequing(-1) -> .chequing ║
+     * ║              ║ = -1).                           ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/23/2023   ║ James Tung                       ║
+     * ║              ║ Account check reformatted. Begin ║
+     * ║              ║ writing switch-case to replace   ║
+     * ║              ║ if statement.                    ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Finish switch-case.              ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Closes an account for the user.
+     *
+     * <p>If both accounts are uninitialized error and exit. If one is open, close it. If both are open, prompt the
+     *    user to choose one.
+     * <p>To close an account, set the balance to -1. Method writes to database at the end.
+     */
     public static void closeAccount() {
         // Prompts the user if they want to close an account
         // if one account, it automatically closes the other
@@ -742,6 +1078,44 @@ public class Main {
         db.writeLine(item, entry);
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╦══════════════════════════════════╣
+     * ║ 12/20/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Method created and documented in ║
+     * ║              ║ pseudocode. Made variables.      ║
+     * ║              ║ Account checking code written.   ║
+     * ║              ║ Check if input from prompt is    ║
+     * ║              ║ valid, and if valid, print       ║
+     * ║              ║ balances of accounts depending   ║
+     * ║              ║ on which are open.               ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ James Tung                       ║
+     * ║              ║ Overhauled method and            ║
+     * ║              ║ drastically reduce complexity.   ║
+     * ║              ║ Just print account if it is      ║
+     * ║              ║ open.                            ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/22/2023   ║ James Tung                       ║
+     * ║              ║ Access account fields directly   ║
+     * ║              ║ instead of through a method      ║
+     * ║              ║ (getChequing() -> .chequing).    ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/23/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Remove commented code            ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Conditions for printing          ║
+     * ║              ║ corrected (needed negation).     ║
+     * ║              ║ Print statements aesthetically   ║
+     * ║              ║ improved.                        ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Display how much money the user has in their accounts.
+     *
+     * <p>Displays the balance for each account as long as it is open. If neither account is open, and error message
+     *    displays.
+     */
     public static void viewBalance() {
         // This method prints out the balances of your accounts
         // if there are no accounts, it sends an error and redirects back to options
@@ -765,11 +1139,33 @@ public class Main {
         }
     }
 
+    /**
+     * ╔═════════════════════════════════════════════════╗
+     * ║                    SESSIONS                     ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/21/2023   ║ Jon Jon Feng                     ║
+     * ║              ║ Created method and described     ║
+     * ║              ║ function. Variables created and  ║
+     * ║              ║ PIN validity is checked. Added   ║
+     * ║              ║ code to write new PIN to         ║
+     * ║              ║ database.                        ║
+     * ╠══════════════╬══════════════════════════════════╣
+     * ║ 12/25/2023   ║ James Tung                       ║
+     * ║              ║ Variable <code>pin</code> is now ║
+     * ║              ║ String; assignments to           ║
+     * ║              ║ <code>pin</code> updated         ║
+     * ║              ║ accordingly. Database update     ║
+     * ║              ║ working and success message      ║
+     * ║              ║ printing.                        ║
+     * ╚══════════════╩══════════════════════════════════╝
+     * Change a user's pin.
+     *
+     * <p>Ask for a new PIN and validate it (4 digits). If valid, update database and output success message.
+     */
     public static void changePin() {
         // This method asks the user for a new pin
         // if valid it updates the database and returns back to options
 
-        // JUAMES PLEASE CHECK IF THIS CODE WORKSSSSSSS PRETTY PLEASEUH also earlier code can we implement this looping sstem r smth??
         Scanner sc = new Scanner(System.in);
         CSV.Items item = db.readLine(entry);
         String input;

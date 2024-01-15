@@ -1,3 +1,10 @@
+/*
+ * TITLE: ATM-Interface
+ * AUTHOR: James Tung, Jon Jon Feng
+ * COURSE: ICS3
+ * DATE CREATED: 12/14/2023
+ */
+
 package src;
 
 import java.util.*;
